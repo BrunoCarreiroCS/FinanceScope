@@ -8,15 +8,14 @@ import secrets
 from dataclasses import asdict
 from datetime import date, datetime
 
-from flask import (Flask, render_template, redirect, url_for, request,
-                   flash, session, g, abort)
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, abort, flash, g, redirect, render_template, request, session, url_for
+from werkzeug.security import check_password_hash, generate_password_hash
 
 import database
 import seeds
 from utils import finance, reports
 from utils.csv_import import parse_csv
-from utils.forms import parse_decimal, parse_date
+from utils.forms import parse_date, parse_decimal
 
 
 def uid():
@@ -77,15 +76,16 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
 
-    def csrf_token():
-        if "_csrf" not in session:
-            session["_csrf"] = secrets.token_hex(16)
-        return session["_csrf"]
     database.init_app(app)
     seeds.register(app)
 
     app.jinja_env.filters["brl"] = brl
     app.jinja_env.filters["date_br"] = date_br
+
+    def csrf_token():
+        if "_csrf" not in session:
+            session["_csrf"] = secrets.token_hex(16)
+        return session["_csrf"]
 
     @app.context_processor
     def inject_globals():

@@ -14,7 +14,6 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Optional
 
-
 # --- Calculos base ---------------------------------------------------------
 
 def hourly_value(monthly_income: float, monthly_hours: float) -> Optional[float]:

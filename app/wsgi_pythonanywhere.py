@@ -20,4 +20,4 @@ os.environ["SECRET_KEY"] = "COLE_UMA_CHAVE_ALEATORIA_AQUI"
 os.environ["SESSION_COOKIE_SECURE"] = "1"  # cookies so via HTTPS
 
 # O PythonAnywhere procura por uma variavel chamada 'application'.
-from app import app as application  # noqa: E402
+from app import app as application  # noqa: E402,F401

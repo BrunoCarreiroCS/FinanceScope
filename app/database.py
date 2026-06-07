@@ -1,7 +1,8 @@
 """Conexao e inicializacao do banco SQLite."""
 import os
 import sqlite3
-from flask import g, current_app
+
+from flask import current_app, g
 
 DB_FILENAME = "financescope.sqlite"
 

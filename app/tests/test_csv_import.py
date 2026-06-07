@@ -1,5 +1,5 @@
 """Testa o parser flexivel de CSV de extratos."""
-from utils.csv_import import parse_amount, parse_date, parse_csv
+from utils.csv_import import parse_amount, parse_csv, parse_date
 
 
 def test_parse_amount_aceita_formatos_comuns():

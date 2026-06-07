@@ -7,7 +7,6 @@ import pytest
 
 from utils import reports
 
-
 SCHEMA = os.path.join(os.path.dirname(__file__), "..", "schema.sql")
 
 

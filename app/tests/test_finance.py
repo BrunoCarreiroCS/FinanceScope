@@ -1,9 +1,9 @@
 """Testes do RealCost Engine."""
 from datetime import date
+
 import pytest
 
 from utils import finance as f
-
 
 # --- valor da hora ---------------------------------------------------------
 
