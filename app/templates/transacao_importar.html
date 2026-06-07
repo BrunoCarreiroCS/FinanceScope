@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import info %}
+{% block title %}Importar CSV - {{ app_name }}{% endblock %}
+{% block page_title %}Importar transações (CSV){% endblock %}
+{% block page_subtitle %}Suba um extrato ou fatura e revise antes de salvar{% endblock %}
+
+{% block content %}
+<div class="card form-card narrow">
+  <form method="post" enctype="multipart/form-data" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <label>
+      <span class="lbl">Arquivo CSV {{ info("Aceita extratos com colunas data, descrição e valor. Valores negativos viram despesa; positivos, receita. Separador , ou ;.") }}</span>
+      <input type="file" name="file" accept=".csv,text/csv" required />
+    </label>
+    <div class="form-actions">
+      <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" class="btn btn-primary">Enviar arquivo</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3 class="card-title">Como deve ser o arquivo</h3>
+  <p class="muted small">
+    O FinanceScope reconhece automaticamente os cabeçalhos mais comuns.
+    Exemplo de conteúdo aceito:
+  </p>
+<pre class="codeblock">data,descricao,valor
+2026-06-05,Salário,3000.00
+2026-06-06,Aluguel,-1200.00
+2026-06-08,Mercado,-520.90</pre>
+  <p class="muted small">
+    Também aceita data em <code>dd/mm/aaaa</code>, separador <code>;</code>,
+    valores como <code>1.234,56</code> e formato <code>R$ -50,00</code>.
+  </p>
+</div>
+{% endblock %}

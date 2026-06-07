@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Confirmar importação - {{ app_name }}{% endblock %}
+{% block page_title %}Confirmar importação{% endblock %}
+{% block page_subtitle %}{{ rows|length }} {{ 'transação encontrada' if rows|length == 1 else 'transações encontradas' }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cards grid-3">
+  <div class="card kpi">
+    <span class="kpi-label">A importar</span>
+    <span class="kpi-value">{{ rows|length }}</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Receitas</span>
+    <span class="kpi-value income">{{ income_total|brl }}</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Despesas</span>
+    <span class="kpi-value expense">{{ expense_total|brl }}</span>
+  </div>
+</div>
+
+{% if errors %}
+<div class="card">
+  <h3 class="card-title">Avisos do parser</h3>
+  <ul class="muted small" style="margin:0; padding-left: 18px">
+    {% for e in errors[:10] %}<li>{{ e }}</li>{% endfor %}
+    {% if errors|length > 10 %}<li>… e mais {{ errors|length - 10 }} linhas.</li>{% endif %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="card">
+  <h3 class="card-title">Pré-visualização</h3>
+  <table class="table">
+    <thead>
+      <tr><th>Data</th><th>Descrição</th><th>Tipo</th><th class="num">Valor</th></tr>
+    </thead>
+    <tbody>
+      {% for r in rows[:200] %}
+      <tr>
+        <td>{{ r.date|date_br }}</td>
+        <td>{{ r.description }}</td>
+        <td>{{ 'Receita' if r.type == 'income' else 'Despesa' }}</td>
+        <td class="num {{ 'income' if r.type == 'income' else 'expense' }}">
+          {{ '+' if r.type == 'income' else '-' }} {{ r.amount|brl }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if rows|length > 200 %}
+  <p class="muted small">Mostrando 200 de {{ rows|length }} linhas. Todas serão importadas.</p>
+  {% endif %}
+</div>
+
+<form method="post" class="form-actions">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <a href="{{ url_for('transacao_importar') }}" class="btn btn-ghost">Cancelar</a>
+  <button type="submit" class="btn btn-primary">Confirmar e importar</button>
+</form>
+{% endblock %}

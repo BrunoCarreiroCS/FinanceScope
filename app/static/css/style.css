@@ -449,6 +449,60 @@ body.auth {
 .flash-success { background: var(--accent-soft); color: #51d6a0; border-color: rgba(22,199,132,0.3); }
 .flash-error   { background: var(--down-soft); color: #fb7185; border-color: rgba(246,70,93,0.3); }
 
+/* empty state "bem-vindo" do dashboard */
+.welcome { border-color: rgba(22,199,132,0.25); }
+.welcome-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.welcome-emoji {
+  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--accent-soft); font-size: 22px;
+}
+.welcome-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.welcome-steps li {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 11px 14px; background: var(--bg-2);
+  border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+}
+.welcome-steps strong { color: var(--text); font-size: 13.5px; }
+.welcome-steps .muted { flex: 1 1 200px; }
+.welcome-actions { display: inline-flex; gap: 6px; }
+
+/* bloco de codigo (instrucoes de importacao etc) */
+.codeblock {
+  background: var(--bg-2); color: var(--text-2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 12px 14px; font-size: 12.5px; line-height: 1.55;
+  font-family: ui-monospace, Menlo, Consolas, monospace; overflow-x: auto;
+}
+
+/* relatorios: filtro inline e cabecalho de impressao */
+.inline-field { display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 13px; }
+.print-head { display: none; }
+
+/* =========================================================================
+   IMPRESSAO / PDF — tema claro e enxuto (esconde navegacao)
+   ========================================================================= */
+@media print {
+  @page { margin: 1.4cm; }
+  body { background: #fff !important; color: #111 !important; }
+  .sidebar, .topbar, .app-foot, .no-print, .edu-note, .flash-area { display: none !important; }
+  .layout { display: block; }
+  .main { padding: 0; min-height: auto; }
+  .content { gap: 16px; }
+  .print-head { display: block !important; font-size: 15px; margin-bottom: 12px; color: #111; }
+  .print-head strong { color: #0a7f4f; }
+  .card {
+    box-shadow: none !important; border: 1px solid #ccc !important;
+    background: #fff !important; break-inside: avoid;
+  }
+  .card-title, .kpi-value { color: #111 !important; }
+  .muted, .kpi-label, .kpi-hint, .legend-name, .table th { color: #555 !important; }
+  .kpi-value.income, .table .income, .legend-val { color: #0a7f4f !important; }
+  .kpi-value.expense, .table .expense { color: #c0392b !important; }
+  code { background: #eee !important; color: #0a7f4f !important; }
+  .table td, .table th { border-color: #ddd !important; }
+  a { color: #111 !important; }
+}
+
 /* =========================================================================
    HOME / boas-vindas (standalone)
    ========================================================================= */

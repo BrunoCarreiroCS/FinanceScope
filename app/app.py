@@ -517,6 +517,60 @@ def create_app(test_config=None):
             mode="editar", tx_id=tx_id,
         )
 
+    # --- Importacao CSV ---------------------------------------------------
+
+    @app.route("/transacoes/importar", methods=["GET", "POST"])
+    def transacao_importar():
+        """Upload do CSV -> mostra preview. Confirmar grava em lote."""
+        if request.method == "POST":
+            file = request.files.get("file")
+            if not file or not file.filename:
+                flash("Selecione um arquivo CSV.", "error")
+                return redirect(url_for("transacao_importar"))
+            raw = file.read(2_000_000)  # 2 MB de teto
+            rows, errors = parse_csv(raw)
+            if not rows:
+                for e in errors:
+                    flash(e, "error")
+                return redirect(url_for("transacao_importar"))
+            # Guarda na sessao para o passo de confirmacao.
+            session["import_preview"] = rows
+            session["import_errors"] = errors
+            return redirect(url_for("transacao_importar_preview"))
+        return render_template("transacao_importar.html", active="transacoes")
+
+    @app.route("/transacoes/importar/preview", methods=["GET", "POST"])
+    def transacao_importar_preview():
+        rows = session.get("import_preview") or []
+        errors = session.get("import_errors") or []
+        if not rows:
+            return redirect(url_for("transacao_importar"))
+
+        if request.method == "POST":
+            db = database.get_db()
+            inserted = 0
+            for r in rows:
+                db.execute(
+                    """INSERT INTO transactions
+                       (user_id, type, description, amount, date)
+                       VALUES (?, ?, ?, ?, ?)""",
+                    (uid(), r["type"], r["description"], r["amount"], r["date"]),
+                )
+                inserted += 1
+            db.commit()
+            session.pop("import_preview", None)
+            session.pop("import_errors", None)
+            flash(f"{inserted} transações importadas.", "success")
+            return redirect(url_for("transacoes"))
+
+        income_total = sum(r["amount"] for r in rows if r["type"] == "income")
+        expense_total = sum(r["amount"] for r in rows if r["type"] == "expense")
+        return render_template(
+            "transacao_importar_preview.html", active="transacoes",
+            rows=rows, errors=errors,
+            income_total=income_total, expense_total=expense_total,
+        )
+
     @app.route("/transacoes/<int:tx_id>/excluir", methods=["POST"])
     def transacao_excluir(tx_id):
         db = database.get_db()
