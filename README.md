@@ -48,7 +48,7 @@ por testes em [`app/tests/test_finance.py`](app/tests/test_finance.py).
 - [x] RealCost Engine com testes (Fase 5, adiantado)
 - [x] Perfil financeiro (Fase 2)
 - [x] CRUD de transações (Fase 3)
-- [ ] Dashboard e gráficos (Fase 4)
+- [x] Dashboard e gráficos (Fase 4)
 - [ ] Metas e simulador "Posso Comprar?" (Fase 6)
 - [ ] Polimento, dados demo e deploy (Fase 7)
 
@@ -67,11 +67,15 @@ pip install -r requirements.txt
 # cria o banco SQLite (perfil + categorias iniciais)
 flask init-db
 
+# opcional: popula com dados de exemplo (perfil, meta e transações)
+flask seed-demo
+
 # inicia o servidor
 flask run
 ```
 
-Acesse http://127.0.0.1:5000
+Acesse http://127.0.0.1:5000 — a raiz abre a tela de boas-vindas e o app
+fica em `/app`.
 
 ### Rodar os testes
 

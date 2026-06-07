@@ -2,6 +2,7 @@
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
 
 {% block content %}
+<!-- Cards principais -->
 <div class="grid grid-cards">
   <div class="card kpi">
     <div class="kpi-top">
@@ -10,8 +11,8 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
       </span>
     </div>
-    <span class="kpi-value income">R$ 0,00</span>
-    <span class="kpi-hint small">total recebido no periodo</span>
+    <span class="kpi-value income">{{ d.income|brl }}</span>
+    <span class="kpi-hint small">total recebido no período</span>
   </div>
 
   <div class="card kpi">
@@ -21,8 +22,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
       </span>
     </div>
-    <span class="kpi-value expense">R$ 0,00</span>
-    <span class="kpi-hint small">total gasto no periodo</span>
+    <span class="kpi-value expense">{{ d.expense|brl }}</span>
+    <span class="kpi-hint small">
+      {% if d.expense_hours_label %}≈ {{ d.expense_hours_label }} de trabalho{% else %}total gasto no período{% endif %}
+    </span>
   </div>
 
   <div class="card kpi">
@@ -32,7 +35,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
       </span>
     </div>
-    <span class="kpi-value">R$ 0,00</span>
+    <span class="kpi-value {{ 'income' if d.balance >= 0 else 'expense' }}">{{ d.balance|brl }}</span>
     <span class="kpi-hint small"><code>receitas - despesas</code></span>
   </div>
 
@@ -43,24 +46,92 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       </span>
     </div>
-    <span class="kpi-value">R$ 0,00</span>
-    <span class="kpi-hint small">média diária × dias do mês</span>
+    <span class="kpi-value">{{ d.forecast|brl }}</span>
+    <span class="kpi-hint small">despesas projetadas para o mês</span>
   </div>
 </div>
 
+<!-- Alertas -->
+{% if d.alerts %}
+<div class="alert-stack">
+  {% for a in d.alerts %}
+  <div class="alert alert-{{ a.level }}">
+    <span class="risk risk-{{ a.level }}">{{ a.level }}</span>
+    <div>
+      <strong>{{ a.title }}</strong>
+      <p>{{ a.text }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Graficos -->
 <div class="grid grid-2">
   <div class="card">
     <h3 class="card-title">Gastos por categoria</h3>
-    <div class="chart-placeholder">Gráfico em breve (Fase 4)</div>
+    {% if d.categories %}
+      <div class="chart-split">
+        <div class="chart-donut"><canvas id="catChart"></canvas></div>
+        <ul class="legend">
+          {% for c in d.categories %}
+          <li>
+            <span class="dot" style="background: {{ c.color }}"></span>
+            <span class="legend-name">{{ c.name }}</span>
+            <span class="legend-val">{{ c.total|brl }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <div class="empty"><p class="muted">Sem despesas neste mês ainda.</p></div>
+    {% endif %}
   </div>
+
   <div class="card">
     <h3 class="card-title">Evolução mensal</h3>
-    <div class="chart-placeholder">Gráfico em breve (Fase 4)</div>
+    <div class="chart-box"><canvas id="evoChart"></canvas></div>
   </div>
 </div>
 
+<!-- Ranking de maiores gastos -->
 <div class="card">
-  <h3 class="card-title">Maiores gastos</h3>
-  <p class="muted">O ranking dos seus maiores vazamentos aparece aqui na Fase 4.</p>
+  <h3 class="card-title">Maiores gastos do mês</h3>
+  {% if d.top_expenses %}
+  <table class="table">
+    <thead>
+      <tr><th>Descrição</th><th>Categoria</th><th>Data</th><th class="num">Valor</th></tr>
+    </thead>
+    <tbody>
+      {% for t in d.top_expenses %}
+      <tr>
+        <td>{{ t.description }}</td>
+        <td>
+          <div class="cat-row">
+            <span class="cat" style="background: {{ t.category_color }}">{{ t.category_name[0]|upper }}</span>
+            {{ t.category_name }}
+          </div>
+        </td>
+        <td>{{ t.date|date_br }}</td>
+        <td class="num expense">{{ t.amount|brl }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Cadastre despesas em <a href="{{ url_for('transacoes') }}">Transações</a> para ver o ranking.</p>
+  {% endif %}
 </div>
+
+<!-- Dados para os graficos (lidos pelo app.js) -->
+<script id="dash-data" type="application/json">
+  {
+    "categories": {
+      "labels": {{ d.categories|map(attribute='name')|list|tojson }},
+      "colors": {{ d.categories|map(attribute='color')|list|tojson }},
+      "values": {{ d.categories|map(attribute='total')|list|tojson }}
+    },
+    "evolution": {{ d.evolution|tojson }}
+  }
+</script>
 {% endblock %}

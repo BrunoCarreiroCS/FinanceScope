@@ -184,6 +184,27 @@ code {
 
 /* chart */
 .chart-box { position: relative; height: 260px; }
+.chart-split { display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: center; }
+@media (max-width: 1180px) { .chart-split { grid-template-columns: 150px 1fr; } }
+.chart-donut { position: relative; height: 180px; }
+
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.legend li { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.legend-name { color: var(--text-2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.legend-val { color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* alertas */
+.alert-stack { display: flex; flex-direction: column; gap: 12px; }
+.alert {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-left-width: 3px; border-radius: var(--radius-sm); padding: 14px 16px;
+}
+.alert strong { font-size: 13.5px; }
+.alert p { margin: 3px 0 0; color: var(--text-muted); font-size: 12.5px; line-height: 1.5; }
+.alert-baixo { border-left-color: var(--up); }
+.alert-medio { border-left-color: var(--gold); }
+.alert-alto  { border-left-color: var(--down); }
 .chart-placeholder {
   height: 240px; border: 1px dashed var(--border); border-radius: var(--radius-sm);
   display: grid; place-items: center; color: var(--text-muted);

@@ -3,7 +3,99 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.debug("FinanceScope UI pronta");
   initHourlyPreview();
+  initDashboardCharts();
 });
+
+// Paleta e helpers compartilhados com o CSS (mantidos em sincronia na mao).
+const CORES = {
+  texto: "#7e8a99",
+  grade: "rgba(255,255,255,0.06)",
+  alta: "#16c784",
+  baixa: "#f6465d",
+};
+
+function moeda(v) {
+  return "R$ " + Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+}
+
+// Dashboard: renderiza o donut de categorias e a linha de evolucao mensal.
+function initDashboardCharts() {
+  const raw = document.getElementById("dash-data");
+  if (!raw || typeof Chart === "undefined") return;
+
+  let data;
+  try {
+    data = JSON.parse(raw.textContent);
+  } catch (e) {
+    console.warn("Falha ao ler dados do dashboard", e);
+    return;
+  }
+
+  Chart.defaults.color = CORES.texto;
+  Chart.defaults.font.family = "Inter, sans-serif";
+
+  // Donut: gastos por categoria.
+  const catEl = document.getElementById("catChart");
+  if (catEl && data.categories.values.length) {
+    new Chart(catEl, {
+      type: "doughnut",
+      data: {
+        labels: data.categories.labels,
+        datasets: [{
+          data: data.categories.values,
+          backgroundColor: data.categories.colors,
+          borderColor: "#151b24",
+          borderWidth: 3,
+        }],
+      },
+      options: {
+        cutout: "64%",
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (c) => " " + c.label + ": " + moeda(c.parsed) } },
+        },
+      },
+    });
+  }
+
+  // Linha: receitas x despesas nos ultimos meses.
+  const evoEl = document.getElementById("evoChart");
+  if (evoEl) {
+    new Chart(evoEl, {
+      type: "line",
+      data: {
+        labels: data.evolution.labels,
+        datasets: [
+          {
+            label: "Receitas", data: data.evolution.income,
+            borderColor: CORES.alta, backgroundColor: "rgba(22,199,132,0.12)",
+            fill: true, tension: 0.35, pointRadius: 3,
+          },
+          {
+            label: "Despesas", data: data.evolution.expense,
+            borderColor: CORES.baixa, backgroundColor: "rgba(246,70,93,0.10)",
+            fill: true, tension: 0.35, pointRadius: 3,
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { labels: { usePointStyle: true, boxWidth: 8 } },
+          tooltip: { callbacks: { label: (c) => c.dataset.label + ": " + moeda(c.parsed.y) } },
+        },
+        scales: {
+          x: { grid: { color: CORES.grade } },
+          y: {
+            grid: { color: CORES.grade },
+            ticks: { callback: (v) => "R$ " + v.toLocaleString("pt-BR") },
+          },
+        },
+      },
+    });
+  }
+}
 
 // Perfil: calcula "valor da hora" ao vivo (renda_mensal / horas_mensais).
 function initHourlyPreview() {

@@ -71,17 +71,17 @@ CREATE TABLE purchase_simulations (
 
 -- Seed: usuario padrao do MVP (sem login) e categorias iniciais.
 INSERT INTO users (id, name, monthly_income, monthly_hours, monthly_limit)
-VALUES (1, 'Usuario FinanceScope', 0, 0, 0);
+VALUES (1, 'Usuário FinanceScope', 0, 0, 0);
 
 INSERT INTO categories (name, type, color, is_default) VALUES
-    ('Salario',       'income',  '#22c55e', 1),
-    ('Freelance',     'income',  '#10b981', 1),
-    ('Outras receitas','income', '#14b8a6', 1),
-    ('Alimentacao',   'expense', '#ef4444', 1),
-    ('Moradia',       'expense', '#f97316', 1),
-    ('Transporte',    'expense', '#eab308', 1),
-    ('Lazer',         'expense', '#a855f7', 1),
-    ('Saude',         'expense', '#06b6d4', 1),
-    ('Educacao',      'expense', '#3b82f6', 1),
-    ('Assinaturas',   'expense', '#ec4899', 1),
-    ('Outros',        'expense', '#64748b', 1);
+    ('Salário',        'income',  '#22c55e', 1),
+    ('Freelance',      'income',  '#10b981', 1),
+    ('Outras receitas','income',  '#14b8a6', 1),
+    ('Alimentação',    'expense', '#ef4444', 1),
+    ('Moradia',        'expense', '#f97316', 1),
+    ('Transporte',     'expense', '#eab308', 1),
+    ('Lazer',          'expense', '#a855f7', 1),
+    ('Saúde',          'expense', '#06b6d4', 1),
+    ('Educação',       'expense', '#3b82f6', 1),
+    ('Assinaturas',    'expense', '#ec4899', 1),
+    ('Outros',         'expense', '#64748b', 1);

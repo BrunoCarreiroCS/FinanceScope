@@ -7,7 +7,8 @@ from flask import Flask, render_template, redirect, url_for, request, flash, g
 from datetime import date, datetime
 
 import database
-from utils import finance
+import seeds
+from utils import finance, reports
 from utils.forms import parse_decimal, parse_date
 
 DEFAULT_USER_ID = 1
@@ -56,6 +57,7 @@ def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "dev-financescope"  # trocar em producao
     database.init_app(app)
+    seeds.register(app)
 
     app.jinja_env.filters["brl"] = brl
     app.jinja_env.filters["date_br"] = date_br
@@ -103,7 +105,9 @@ def create_app():
 
     @app.route("/app")
     def dashboard():
-        return render_template("dashboard.html", active="dashboard")
+        db = database.get_db()
+        data = reports.build_dashboard(db, g.user)
+        return render_template("dashboard.html", active="dashboard", d=data)
 
     @app.route("/perfil", methods=["GET", "POST"])
     def perfil():
