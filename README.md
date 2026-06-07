@@ -35,6 +35,32 @@ manda.
 
 ---
 
+## 📸 Telas
+
+<div align="center">
+
+### Landing — *Entenda seu dinheiro. Decida melhor. Viva leve.*
+![Home](docs/screenshots/home.png)
+
+### Dashboard — cards, alertas, gráficos e ranking
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Transações — listagem com filtros e categorias coloridas
+![Transações](docs/screenshots/transacoes.png)
+
+### Metas — progresso e prazo estimado pelo RealCost
+![Metas](docs/screenshots/metas.png)
+
+### Simulador "Posso comprar?" — veredito de decisão
+![Simulador](docs/screenshots/simulador.png)
+
+### Perfil — base de cálculo do RealCost
+![Perfil](docs/screenshots/perfil.png)
+
+</div>
+
+---
+
 ## 🚀 Funcionalidades
 
 | Módulo | O que faz |
