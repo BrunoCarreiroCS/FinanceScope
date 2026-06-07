@@ -1,5 +1,3 @@
-<div align="center">
-
 # FinanceScope
 
 [![CI](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml)
@@ -11,13 +9,30 @@
 **Entenda seu dinheiro. Decida melhor. Viva leve.**
 
 Sistema web de gestão financeira pessoal com foco em **decisão**, não só em
-registro. Em vez de mostrar onde o dinheiro foi, ajuda a responder *"posso
-comprar isso?"* — traduzindo cada gasto em **horas de trabalho**, **impacto na
-renda** e **atraso nas metas**.
+registro.
 
-[🌐 Demo online](https://brunoso.pythonanywhere.com)  ·  conta demo: `demo@financescope.app` / `demo1234`
+Em vez de mostrar onde o dinheiro foi, ajuda a responder:
 
-</div>
+> *"Posso comprar isso?"*
+
+Traduzindo cada gasto em **horas de trabalho**, **impacto na renda** e
+**atraso nas metas**.
+
+🌐 **[Demo online](https://brunoso.pythonanywhere.com)** · conta demo: `demo@financescope.app` / `demo1234`
+
+---
+
+## 🎯 Problema que resolvi
+
+A maioria dos aplicativos de finanças mostra ao usuário **onde o dinheiro foi
+gasto depois que o gasto já aconteceu**.
+
+O FinanceScope muda essa lógica: ele ajuda o usuário a **decidir antes de
+comprar**, traduzindo uma compra em horas de trabalho, impacto percentual na
+renda e atraso nas metas financeiras.
+
+Assim, o app não funciona apenas como um histórico financeiro, mas como uma
+**ferramenta de tomada de decisão**.
 
 ---
 
@@ -80,6 +95,22 @@ manda.
 | 🛒 **Simulador "Posso comprar?"** | Impacto antes de comprar + **veredito de decisão** |
 | 📈 **Relatórios** | Análise por período, exportação para PDF (impressão otimizada) |
 | 💡 **Tooltips didáticos** | Cada termo financeiro com explicação ao passar o mouse |
+
+---
+
+## 💪 Principais competências demonstradas
+
+- **Desenvolvimento web** com Flask (factory pattern, blueprints, sessões)
+- **Autenticação por sessão** com hash de senha (Werkzeug) e proteção CSRF
+- **Modelagem de banco** SQLite (5 tabelas, constraints, foreign keys)
+- **Regras de negócio financeiras** centralizadas e testáveis (RealCost Engine)
+- **Testes automatizados** com pytest (54 testes, cobertura de auth, regras e CSV)
+- **CI/CD** com GitHub Actions (testes em múltiplas versões + lint)
+- **Deploy em ambiente real** (PythonAnywhere, HTTPS, banco persistente)
+- **UI dark profissional** com CSS puro (sem framework), responsividade
+- **Visualização de dados** com Chart.js (donut, linha de evolução)
+- **Importação de dados** via CSV com parser flexível
+- **Documentação** clara (README, DEPLOY, comentários, ADRs implícitos)
 
 ---
 
@@ -248,7 +279,8 @@ O produto **sugere**, não impõe. Frases como "estimativa", "no ritmo atual",
 <div align="center">
 
 **Bruno Carreiro dos Santos**
-[GitHub](https://github.com/BrunoCarreiroCS) · [LinkedIn](#) · [E-mail](mailto:karsario31@gmail.com)
+
+[GitHub](https://github.com/BrunoCarreiroCS) · [LinkedIn](https://www.linkedin.com/in/bruno-carreiro-dos-santos-2006-eng/) · [E-mail](mailto:brunocarreirodossantos12@gmail.com)
 
 © 2026 FinanceScope · Todos os direitos reservados.
 
