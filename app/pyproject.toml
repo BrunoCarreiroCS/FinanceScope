@@ -1,0 +1,25 @@
+# Configuração do projeto: ruff (linter), pytest (testes).
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["instance", ".venv", "__pycache__"]
+
+[tool.ruff.lint]
+# Selecionados: pyflakes (F), pycodestyle (E/W), bugbear (B),
+# imports (I) e simplifications (SIM).
+select = ["E", "F", "W", "B", "I", "SIM"]
+ignore = [
+    "E501",   # comprimento de linha (deixamos para o ruff format se for o caso)
+    "E402",   # imports tardios (uso intencional em testes)
+    "B008",   # default mutável (usado em fixtures)
+    "SIM108", # ternário forçado nem sempre é mais legível
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]   # asserts em testes
+"app.py" = ["E741"]    # vars curtas tipo 'g' (helper local)
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

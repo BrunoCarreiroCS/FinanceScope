@@ -2,6 +2,12 @@
 
 # FinanceScope
 
+[![CI](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+![Flask](https://img.shields.io/badge/flask-3.x-black)
+![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 **Entenda seu dinheiro. Decida melhor. Viva leve.**
 
 Sistema web de gestão financeira pessoal com foco em **decisão**, não só em
