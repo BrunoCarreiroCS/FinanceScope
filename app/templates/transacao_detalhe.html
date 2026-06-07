@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "_macros.html" import info %}
+{% block title %}{{ tx.description }} - {{ app_name }}{% endblock %}
+{% block page_title %}Detalhe da transação{% endblock %}
+{% block page_subtitle %}{{ 'Receita' if tx.type == 'income' else 'Despesa' }} · {{ tx.date|date_br }}{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('transacao_editar', tx_id=tx.id) }}" class="btn">Editar</a>
+  <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Voltar</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <!-- Dados da transacao -->
+  <div class="card">
+    <h3 class="card-title">{{ tx.description }}</h3>
+    <div class="rc-rows">
+      <div class="rc-row">
+        <span>Valor</span>
+        <strong class="{{ 'up' if tx.type == 'income' else 'down' }}">
+          {{ '+' if tx.type == 'income' else '-' }} {{ tx.amount|brl }}
+        </strong>
+      </div>
+      <div class="rc-row">
+        <span>Tipo</span>
+        <strong>{{ 'Receita' if tx.type == 'income' else 'Despesa' }}</strong>
+      </div>
+      <div class="rc-row">
+        <span>Categoria</span>
+        <strong>
+          {% if tx.category_name %}
+            <span class="dot" style="background: {{ tx.category_color }}"></span>{{ tx.category_name }}
+          {% else %}—{% endif %}
+        </strong>
+      </div>
+      <div class="rc-row">
+        <span>Data</span>
+        <strong>{{ tx.date|date_br }}</strong>
+      </div>
+      <div class="rc-row">
+        <span>Pagamento</span>
+        <strong>{{ tx.payment_method or '—' }}</strong>
+      </div>
+      <div class="rc-row">
+        <span>Recorrente</span>
+        <strong>{{ 'Sim' if tx.is_recurring else 'Não' }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- RealCost -->
+  <div class="card">
+    <h3 class="card-title">
+      <span class="kpi-chip is-gold" style="width:28px;height:28px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </span>
+      RealCost desta despesa
+    </h3>
+
+    {% if rc %}
+      <div class="rc-rows">
+        <div class="rc-row">
+          <span>Custo em tempo {{ info("Quantas horas de trabalho essa despesa custou: valor ÷ (renda ÷ horas mensais).") }}</span>
+          <strong class="accent">
+            {{ rc.hours_label if rc.hours_label else '—' }}{% if rc.hours_label %} de trabalho{% endif %}
+          </strong>
+        </div>
+        <div class="rc-row">
+          <span>Impacto na renda {{ info("Quanto a despesa representa da sua renda mensal: (valor ÷ renda) × 100.") }}</span>
+          <strong>{{ '%.1f'|format(rc.income_impact_pct) ~ '%' if rc.income_impact_pct is not none else '—' }}</strong>
+        </div>
+        <div class="rc-row">
+          <span>Atraso na meta {{ info("Quantos meses de aporte essa despesa consome: valor ÷ aporte mensal da meta principal.") }}</span>
+          <strong class="down">
+            {% if rc.goal_delay_months %}+{{ '%.1f'|format(rc.goal_delay_months) }} meses{% else %}—{% endif %}
+          </strong>
+        </div>
+        <div class="rc-row">
+          <span>Risco {{ info("Classificação pelo impacto na renda: baixo (até 5%), médio (5–15%) ou alto (acima de 15%).") }}</span>
+          <span class="risk risk-{{ rc.risk }}">{{ rc.risk }}</span>
+        </div>
+      </div>
+
+      <p class="rc-msg">{{ rc.message }}</p>
+
+      <p class="muted small">
+        Fórmulas: <code>valor / (renda / horas)</code> para o tempo;
+        <code>(valor / renda) × 100</code> para o impacto.
+      </p>
+    {% elif tx.type == 'income' %}
+      <p class="muted">
+        O RealCost traduz o custo de <strong>despesas</strong> em tempo de trabalho.
+        Para receitas, mostramos apenas os dados acima.
+      </p>
+    {% else %}
+      <p class="muted">
+        Complete seu <a href="{{ url_for('perfil') }}">perfil financeiro</a>
+        (renda e horas) para ver o custo em horas e o impacto na renda.
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -244,6 +244,36 @@ def create_app():
             balance=total_income - total_expense,
         )
 
+    @app.route("/transacoes/<int:tx_id>")
+    def transacao_detalhe(tx_id):
+        db = database.get_db()
+        tx = db.execute(
+            """SELECT t.*, c.name AS category_name, c.color AS category_color
+               FROM transactions t
+               LEFT JOIN categories c ON c.id = t.category_id
+               WHERE t.id = ? AND t.user_id = ?""",
+            (tx_id, DEFAULT_USER_ID),
+        ).fetchone()
+        if tx is None:
+            flash("Transação não encontrada.", "error")
+            return redirect(url_for("transacoes"))
+
+        # RealCost so faz sentido para despesas. Reusa o mesmo motor do simulador.
+        analysis = None
+        if tx["type"] == "expense" and g.user:
+            main_goal = get_main_goal(db, DEFAULT_USER_ID)
+            contribution = main_goal["monthly_contribution"] if main_goal else 0
+            analysis = finance.analyze_purchase(
+                amount=tx["amount"],
+                installments=1,
+                monthly_income=g.user["monthly_income"],
+                monthly_hours=g.user["monthly_hours"],
+                monthly_contribution=contribution,
+            )
+        return render_template(
+            "transacao_detalhe.html", active="transacoes", tx=tx, rc=analysis,
+        )
+
     def _validate_transaction(form):
         """Valida o dicionario do form. Retorna (dados, errors)."""
         errors = {}

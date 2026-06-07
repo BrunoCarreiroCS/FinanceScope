@@ -68,7 +68,7 @@
       <tr>
         <td>{{ t.date|date_br }}</td>
         <td>
-          {{ t.description }}
+          <a href="{{ url_for('transacao_detalhe', tx_id=t.id) }}" class="link">{{ t.description }}</a>
           {% if t.is_recurring %}<span class="tag">recorrente</span>{% endif %}
         </td>
         <td>
