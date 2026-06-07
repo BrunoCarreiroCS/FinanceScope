@@ -16,8 +16,8 @@ metas** — para você decidir antes de gastar, não depois.
 
 Apps de finanças mostram *onde* o dinheiro foi, mas não ajudam a *decidir* antes
 da compra. FinanceScope responde a pergunta que importa: **"posso comprar
-isso?"** — mostrando o custo real em tempo de trabalho e o impacto nas suas
-metas.
+isso?"** — mostrando o custo real em tempo de trabalho, o impacto nas metas e um
+**veredito** (vale a pena / melhor esperar / não compre agora).
 
 ## Diferencial RealCost
 
@@ -36,21 +36,25 @@ por testes em [`app/tests/test_finance.py`](app/tests/test_finance.py).
 
 ## Stack
 
-- **Flask** — rotas, regras de negócio
-- **SQLite** — persistência local
-- **Jinja2 + CSS próprio** — layout SaaS dark/verde, desktop-first
+- **Flask** — rotas, regras de negócio e autenticação por sessão
+- **SQLite** — persistência (um arquivo por instalação, em `app/instance/`)
+- **Werkzeug** — hash de senhas (scrypt/pbkdf2)
+- **Jinja2 + CSS próprio** — layout SaaS dark/verde (Organizze × Binance), desktop-first
 - **Chart.js** — gráficos do dashboard
-- **pytest** — testes do RealCost Engine
+- **pytest** — testes do RealCost Engine, dos relatórios e da autenticação
 
-## Funcionalidades (MVP)
+## Funcionalidades
 
-- [x] Estrutura base, layout e navegação (Fase 1)
-- [x] RealCost Engine com testes (Fase 5, adiantado)
-- [x] Perfil financeiro (Fase 2)
-- [x] CRUD de transações (Fase 3)
-- [x] Dashboard e gráficos (Fase 4)
-- [ ] Metas e simulador "Posso Comprar?" (Fase 6)
-- [ ] Polimento, dados demo e deploy (Fase 7)
+- [x] Tela de boas-vindas (landing) e navegação
+- [x] **Login multiusuário** (cadastro, login, logout) — cada um vê só os seus dados
+- [x] Perfil financeiro (renda, horas, limite, meta principal)
+- [x] CRUD de transações com filtros (mês, tipo, categoria)
+- [x] Dashboard com cards, gráficos (Chart.js) e alertas de risco
+- [x] **RealCost** em detalhes de despesa (custo em horas, % da renda, risco)
+- [x] Metas com progresso e prazo estimado
+- [x] Simulador "Posso comprar?" com **veredito de decisão**
+- [x] Tooltips de ajuda (ícone "i") em todas as telas
+- [x] Dados de demonstração + testes automatizados
 
 ## Como rodar
 
@@ -64,18 +68,27 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 
-# cria o banco SQLite (perfil + categorias iniciais)
+# cria o banco SQLite (categorias padrão)
 flask init-db
 
-# opcional: popula com dados de exemplo (perfil, meta e transações)
+# opcional: cria um usuário demo já com dados de exemplo
 flask seed-demo
 
 # inicia o servidor
 flask run
 ```
 
-Acesse http://127.0.0.1:5000 — a raiz abre a tela de boas-vindas e o app
-fica em `/app`.
+Acesse **http://127.0.0.1:5000** — a raiz abre a tela de boas-vindas; crie sua
+conta em **Criar conta** e o app fica em `/app`.
+
+### Conta de demonstração
+
+Se você rodou `flask seed-demo`:
+
+```
+E-mail: demo@financescope.app
+Senha:  demo1234
+```
 
 ### Rodar os testes
 
@@ -84,10 +97,35 @@ cd app
 pytest
 ```
 
+### Configuração de produção
+
+Defina uma chave de sessão forte via variável de ambiente:
+
+```bash
+export SECRET_KEY="uma-chave-bem-aleatoria"   # Windows: set SECRET_KEY=...
+```
+
+## Arquitetura
+
+```
+app/
+├── app.py            # rotas, autenticação e regras de negócio
+├── database.py       # conexão SQLite + comando init-db
+├── schema.sql        # tabelas: users, categories, transactions, goals, purchase_simulations
+├── seeds.py          # comando seed-demo (usuário + dados de exemplo)
+├── utils/
+│   ├── finance.py    # RealCost Engine (fórmulas, risco, veredito)
+│   ├── reports.py    # agregações do dashboard
+│   └── forms.py      # parsing/validação de formulários
+├── templates/        # Jinja2 (landing, auth, app)
+├── static/           # CSS, JS, favicon
+└── tests/            # pytest (finance, reports, auth)
+```
+
 ## Roadmap (pós-MVP)
 
-Login e multiusuário · importação CSV · score financeiro · assinaturas
-completas · relatórios PDF · responsividade mobile.
+Importação CSV de extratos · relatórios por período + exportação PDF · score
+financeiro · assinaturas (custo anual recorrente) · responsividade mobile.
 
 ---
 
