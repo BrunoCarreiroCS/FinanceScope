@@ -504,6 +504,116 @@ body.auth {
 }
 
 /* =========================================================================
+   MOBILE — botão hambúrguer, sidebar off-canvas, grids em coluna única
+   ========================================================================= */
+
+/* Hambúrguer e overlay: invisíveis no desktop. */
+.hamburger { display: none; }
+.sidebar-overlay { display: none; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+
+  /* Botão hambúrguer fixo no canto superior esquerdo */
+  .hamburger {
+    display: grid; place-items: center;
+    position: fixed; top: 14px; left: 14px; z-index: 90;
+    width: 42px; height: 42px; border-radius: 11px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .hamburger svg { width: 22px; height: 22px; }
+  .hamburger:hover { background: var(--surface-2); }
+
+  /* Sidebar vira off-canvas: começa fora da tela, desliza pra dentro */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 270px; height: 100vh; z-index: 100;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.5);
+  }
+  .sidebar.is-open { transform: translateX(0); }
+
+  /* Overlay escuro atrás da sidebar */
+  .sidebar-overlay {
+    display: block;
+    position: fixed; inset: 0; z-index: 95;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  /* Main ganha padding pra não passar embaixo do hambúrguer */
+  .main { padding: 70px 16px 24px; min-height: auto; }
+
+  /* Topbar empilha (saudação em cima, ações embaixo) */
+  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .topbar-actions { width: 100%; justify-content: flex-end; }
+  .greet-name { font-size: 22px; }
+  .page-title { font-size: 19px; }
+
+  /* Todos os grids em coluna única */
+  .grid-cards,
+  .grid-cards.grid-3,
+  .grid-2,
+  .form-grid,
+  .features { grid-template-columns: 1fr !important; }
+
+  /* Cards menores */
+  .card { padding: 16px; border-radius: 12px; }
+  .kpi-value { font-size: 22px; }
+
+  /* Tabelas com scroll horizontal pra não estourar */
+  .table { display: block; overflow-x: auto; white-space: nowrap; }
+  .table th, .table td { padding: 10px 8px; font-size: 12.5px; }
+
+  /* Toolbar (filtros) em coluna */
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbar input, .toolbar select, .toolbar .btn { width: 100%; }
+
+  /* Form-actions empilham */
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions .btn { width: 100%; justify-content: center; }
+
+  /* Chart donut + lista lado a lado vira empilhado */
+  .chart-split { flex-direction: column; }
+
+  /* Hero da home */
+  .hero { padding: 28px 18px 36px; gap: 28px; }
+  .hero-title { font-size: 36px; }
+  .home-nav { padding: 18px; }
+  .home-nav .brand-tag { display: none; }
+  .home-nav-links { gap: 8px; }
+  .home-nav-links .btn { padding: 8px 12px; font-size: 13px; }
+  .rc-card { transform: none; }
+
+  /* Trust strip / features no rodapé da home em coluna */
+  .trust { padding: 14px 18px; gap: 10px; }
+  .trust-sep { display: none; }
+  .features { padding: 0 18px 40px; }
+
+  /* Welcome card empilhado */
+  .welcome-steps li { flex-direction: column; align-items: flex-start; }
+  .welcome-steps .muted { flex: none; }
+
+  /* Dropdown do avatar mais largo */
+  .user-dropdown { width: 240px; right: 0; }
+
+  /* Auth cards com padding menor */
+  .auth-card { padding: 24px 20px; }
+}
+
+/* Telas muito pequenas (< 420px) — refinamento extra */
+@media (max-width: 420px) {
+  .main { padding: 64px 12px 20px; }
+  .hero-title { font-size: 30px; }
+  .kpi-value { font-size: 20px; }
+  .brand-name { font-size: 15px; }
+  .home-nav-links .btn { padding: 6px 10px; font-size: 12px; }
+}
+
+/* =========================================================================
    HOME / boas-vindas (standalone)
    ========================================================================= */
 

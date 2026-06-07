@@ -5,7 +5,39 @@ document.addEventListener("DOMContentLoaded", () => {
   initHourlyPreview();
   initDashboardCharts();
   initUserMenu();
+  initMobileSidebar();
 });
+
+// Sidebar off-canvas no mobile: abre/fecha via hamburguer + overlay.
+function initMobileSidebar() {
+  const btn = document.getElementById("hamburgerBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  if (!btn || !sidebar || !overlay) return;
+
+  const open = () => {
+    sidebar.classList.add("is-open");
+    overlay.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden"; // trava scroll de fundo
+  };
+  const close = () => {
+    sidebar.classList.remove("is-open");
+    overlay.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  };
+
+  btn.addEventListener("click", () => {
+    sidebar.classList.contains("is-open") ? close() : open();
+  });
+  overlay.addEventListener("click", close);
+  // Fecha ao clicar em qualquer link do menu (UX no mobile).
+  sidebar.querySelectorAll(".nav-item").forEach((a) => a.addEventListener("click", close));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sidebar.classList.contains("is-open")) close();
+  });
+}
 
 // Menu do avatar (canto superior direito): abre/fecha no clique,
 // fecha ao clicar fora ou apertar Esc.

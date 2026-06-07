@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1280" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,7 +14,18 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar">
+    <!-- Botao hamburguer: visivel so no mobile (CSS) -->
+    <button class="hamburger" id="hamburgerBtn" type="button"
+            aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+    <!-- Overlay escuro atras da sidebar quando aberta no mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+
+    <aside class="sidebar" id="sidebar">
       <a href="{{ url_for('home') }}" class="brand" title="Voltar à página inicial">
         <span class="brand-mark">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
