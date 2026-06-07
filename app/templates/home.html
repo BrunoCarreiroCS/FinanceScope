@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ app_name }} — Entenda seu dinheiro. Decida melhor.</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -112,12 +113,26 @@
     </div>
   </section>
 
+  <!-- Strip de confianca -->
+  <section class="trust">
+    <span class="trust-item">🔒 Sem login · dados locais</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">📊 Dashboard de decisão</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">⏱️ Custo real em horas</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">🎯 Metas e simulador</span>
+  </section>
+
   <footer class="home-foot">
+    <div>
+      <p class="foot-brand">Finance<strong>Scope</strong></p>
+      <p class="muted small">© 2026 {{ app_name }} · Todos os direitos reservados.</p>
+    </div>
     <p class="muted small">
       As análises são estimativas com base nos dados informados e não substituem
       planejamento financeiro profissional.
     </p>
-    <p class="muted small">FinanceScope · projeto beta</p>
   </footer>
 </body>
 </html>

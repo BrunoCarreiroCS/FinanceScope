@@ -4,7 +4,37 @@ document.addEventListener("DOMContentLoaded", () => {
   console.debug("FinanceScope UI pronta");
   initHourlyPreview();
   initDashboardCharts();
+  initUserMenu();
 });
+
+// Menu do avatar (canto superior direito): abre/fecha no clique,
+// fecha ao clicar fora ou apertar Esc.
+function initUserMenu() {
+  const btn = document.getElementById("avatarBtn");
+  const menu = document.getElementById("userDropdown");
+  if (!btn || !menu) return;
+
+  const close = () => {
+    menu.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+  };
+  const toggle = () => {
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle();
+  });
+  document.addEventListener("click", (e) => {
+    if (!menu.hidden && !menu.contains(e.target)) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+}
 
 // Paleta e helpers compartilhados com o CSS (mantidos em sincronia na mao).
 const CORES = {

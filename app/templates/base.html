@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1280" />
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -14,14 +15,17 @@
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <div class="brand">
+      <a href="{{ url_for('home') }}" class="brand" title="Voltar à página inicial">
         <span class="brand-mark">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
           </svg>
         </span>
-        <span class="brand-name">Finance<strong>Scope</strong></span>
-      </div>
+        <span class="brand-text">
+          <span class="brand-name">Finance<strong>Scope</strong></span>
+          <span class="brand-tag">Decida melhor. Viva leve.</span>
+        </span>
+      </a>
 
       <nav class="nav">
         <a href="{{ url_for('dashboard') }}" class="nav-item {% if active=='dashboard' %}is-active{% endif %}">
@@ -67,7 +71,34 @@
         </div>
         <div class="topbar-actions">
           {% block topbar_actions %}{% endblock %}
-          <div class="avatar" title="{{ user_name or 'Você' }}">{{ (user_name or 'U')[0]|upper }}</div>
+          <div class="user-menu">
+            <button class="avatar" id="avatarBtn" type="button"
+                    aria-haspopup="true" aria-expanded="false"
+                    title="{{ user_name or 'Você' }}">{{ (user_name or 'U')[0]|upper }}</button>
+
+            <div class="user-dropdown" id="userDropdown" hidden>
+              <div class="user-dropdown-head">
+                <span class="avatar avatar-sm">{{ (user_name or 'U')[0]|upper }}</span>
+                <div>
+                  <strong>{{ user_name or 'Você' }}</strong>
+                  <span class="muted small">conta local</span>
+                </div>
+              </div>
+              <a href="{{ url_for('perfil') }}" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                Perfil
+              </a>
+              <a href="{{ url_for('home') }}" class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+                Página inicial
+              </a>
+              <div class="dropdown-sep"></div>
+              <button type="button" class="dropdown-item is-disabled" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+                Entrar / Login <span class="soon">em breve</span>
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -84,6 +115,11 @@
       <section class="content">
         {% block content %}{% endblock %}
       </section>
+
+      <footer class="app-foot">
+        <span>© 2026 {{ app_name }} · Todos os direitos reservados.</span>
+        <span class="muted small">Estimativas educacionais — não substituem planejamento financeiro profissional.</span>
+      </footer>
     </main>
   </div>
 </body>
