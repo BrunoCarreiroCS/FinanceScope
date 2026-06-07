@@ -103,7 +103,13 @@ Defina uma chave de sessão forte via variável de ambiente:
 
 ```bash
 export SECRET_KEY="uma-chave-bem-aleatoria"   # Windows: set SECRET_KEY=...
+export SESSION_COOKIE_SECURE=1                # cookies só via HTTPS
 ```
+
+## Deploy (hospedagem grátis)
+
+Passo a passo para publicar de graça no PythonAnywhere (acessível pelo
+celular, com HTTPS): veja **[`DEPLOY.md`](DEPLOY.md)**.
 
 ## Arquitetura
 

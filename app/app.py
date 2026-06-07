@@ -67,6 +67,10 @@ def create_app(test_config=None):
         "SECRET_KEY", "dev-financescope-troque-em-producao"
     )
     app.config["DATABASE"] = os.path.join(app.instance_path, database.DB_FILENAME)
+    # Endurecimento da sessao. SECURE so liga em producao (HTTPS) via env,
+    # para nao quebrar o login em http://localhost no desenvolvimento.
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_SECURE"] = bool(os.environ.get("SESSION_COOKIE_SECURE"))
     if test_config:
         app.config.update(test_config)
     database.init_app(app)
