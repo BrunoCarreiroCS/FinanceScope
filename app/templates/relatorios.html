@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% from "_macros.html" import info %}
+{% block title %}Relatórios - {{ app_name }}{% endblock %}
+{% block page_title %}Relatórios{% endblock %}
+{% block page_subtitle %}Análise por período{% endblock %}
+
+{% block topbar_actions %}
+  <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir / Salvar PDF</button>
+{% endblock %}
+
+{% block content %}
+<!-- Cabecalho que aparece no PDF impresso -->
+<div class="print-head">
+  <strong>FinanceScope</strong> — Relatório de {{ start|date_br }} a {{ end|date_br }}
+</div>
+
+<!-- Filtro de periodo -->
+<div class="card no-print">
+  <form class="toolbar" method="get">
+    <label class="inline-field">De
+      <input type="date" name="start" value="{{ start }}" />
+    </label>
+    <label class="inline-field">Até
+      <input type="date" name="end" value="{{ end }}" />
+    </label>
+    <button type="submit" class="btn">Aplicar</button>
+  </form>
+</div>
+
+<!-- KPIs -->
+<div class="grid grid-cards">
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Receitas</span></div>
+    <span class="kpi-value income">{{ d.income|brl }}</span>
+    <span class="kpi-hint small">{{ d.count }} lançamentos no período</span>
+  </div>
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Despesas {{ info("Total gasto no período. Abaixo, o equivalente em horas de trabalho.") }}</span></div>
+    <span class="kpi-value expense">{{ d.expense|brl }}</span>
+    <span class="kpi-hint small">
+      {% if d.expense_hours_label %}≈ {{ d.expense_hours_label }} de trabalho{% else %}—{% endif %}
+    </span>
+  </div>
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Saldo</span></div>
+    <span class="kpi-value {{ 'income' if d.balance >= 0 else 'expense' }}">{{ d.balance|brl }}</span>
+    <span class="kpi-hint small">no período</span>
+  </div>
+  <div class="card kpi">
+    <div class="kpi-top"><span class="kpi-label">Média de despesa/mês {{ info("Total de despesas dividido pelo número de meses do período.") }}</span></div>
+    <span class="kpi-value">{{ d.avg_monthly_expense|brl }}</span>
+    <span class="kpi-hint small">{{ d.n_months }} {{ 'mês' if d.n_months == 1 else 'meses' }}</span>
+  </div>
+</div>
+
+<!-- Graficos -->
+<div class="grid grid-2">
+  <div class="card">
+    <h3 class="card-title">Gastos por categoria</h3>
+    {% if d.categories %}
+      <div class="chart-split">
+        <div class="chart-donut"><canvas id="catChart"></canvas></div>
+        <ul class="legend">
+          {% for c in d.categories %}
+          <li>
+            <span class="dot" style="background: {{ c.color }}"></span>
+            <span class="legend-name">{{ c.name }}</span>
+            <span class="legend-val">{{ c.total|brl }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <div class="empty"><p class="muted">Sem despesas neste período.</p></div>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h3 class="card-title">Evolução mensal</h3>
+    <div class="chart-box"><canvas id="evoChart"></canvas></div>
+  </div>
+</div>
+
+<!-- Maiores gastos -->
+<div class="card">
+  <h3 class="card-title">Maiores gastos do período</h3>
+  {% if d.top_expenses %}
+  <table class="table">
+    <thead>
+      <tr><th>Descrição</th><th>Categoria</th><th>Data</th><th class="num">Valor</th></tr>
+    </thead>
+    <tbody>
+      {% for t in d.top_expenses %}
+      <tr>
+        <td>{{ t.description }}</td>
+        <td>
+          <div class="cat-row">
+            <span class="cat" style="background: {{ t.category_color }}">{{ t.category_name[0]|upper }}</span>
+            {{ t.category_name }}
+          </div>
+        </td>
+        <td>{{ t.date|date_br }}</td>
+        <td class="num expense">{{ t.amount|brl }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Sem despesas neste período.</p>
+  {% endif %}
+</div>
+
+<p class="muted small no-print" style="margin-top:4px">
+  As análises são estimativas com base nos seus dados.
+</p>
+
+<script id="dash-data" type="application/json">
+  {
+    "categories": {
+      "labels": {{ d.categories|map(attribute='name')|list|tojson }},
+      "colors": {{ d.categories|map(attribute='color')|list|tojson }},
+      "values": {{ d.categories|map(attribute='total')|list|tojson }}
+    },
+    "evolution": {{ d.evolution|tojson }}
+  }
+</script>
+{% endblock %}

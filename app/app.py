@@ -229,6 +229,31 @@ def create_app(test_config=None):
         data = reports.build_dashboard(db, g.user)
         return render_template("dashboard.html", active="dashboard", d=data)
 
+    @app.route("/relatorios")
+    def relatorios():
+        db = database.get_db()
+        today = date.today()
+        # Periodo padrao: do 1o dia de 2 meses atras ate hoje (~3 meses).
+        y, m = today.year, today.month - 2
+        while m < 1:
+            m += 12
+            y -= 1
+        default_start = date(y, m, 1).isoformat()
+
+        start = request.args.get("start") or default_start
+        end = request.args.get("end") or today.isoformat()
+        _, e1 = parse_date(start)
+        _, e2 = parse_date(end)
+        if e1 or e2:
+            start, end = default_start, today.isoformat()
+        elif start > end:
+            start, end = end, start
+
+        data = reports.build_report(db, g.user, start, end)
+        return render_template(
+            "relatorios.html", active="relatorios", d=data, start=start, end=end
+        )
+
     @app.route("/perfil", methods=["GET", "POST"])
     def perfil():
         db = database.get_db()

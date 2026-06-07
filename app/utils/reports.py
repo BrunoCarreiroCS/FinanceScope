@@ -167,6 +167,122 @@ def build_alerts(user, totals: dict, forecast: float, balance: float) -> list[di
     return alerts
 
 
+# --------------------------------------------------------------------------
+# Relatorios por periodo (intervalo de datas arbitrario)
+# --------------------------------------------------------------------------
+
+def period_totals(db, user_id: int, start: str, end: str) -> dict:
+    rows = db.execute(
+        """SELECT type, COALESCE(SUM(amount), 0) AS total
+           FROM transactions
+           WHERE user_id = ? AND date BETWEEN ? AND ?
+           GROUP BY type""",
+        (user_id, start, end),
+    ).fetchall()
+    totals = {"income": 0.0, "expense": 0.0}
+    for r in rows:
+        totals[r["type"]] = r["total"]
+    return totals
+
+
+def expenses_by_category_period(db, user_id: int, start: str, end: str) -> list[dict]:
+    rows = db.execute(
+        """SELECT COALESCE(c.name, 'Sem categoria') AS name,
+                  COALESCE(c.color, '#7e8a99')      AS color,
+                  SUM(t.amount)                     AS total
+           FROM transactions t
+           LEFT JOIN categories c ON c.id = t.category_id
+           WHERE t.user_id = ? AND t.type = 'expense'
+                 AND t.date BETWEEN ? AND ?
+           GROUP BY t.category_id
+           ORDER BY total DESC""",
+        (user_id, start, end),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def top_expenses_period(db, user_id: int, start: str, end: str, limit: int = 10) -> list[dict]:
+    rows = db.execute(
+        """SELECT t.description, t.amount, t.date,
+                  COALESCE(c.name, 'Sem categoria') AS category_name,
+                  COALESCE(c.color, '#7e8a99')      AS category_color
+           FROM transactions t
+           LEFT JOIN categories c ON c.id = t.category_id
+           WHERE t.user_id = ? AND t.type = 'expense'
+                 AND t.date BETWEEN ? AND ?
+           ORDER BY t.amount DESC
+           LIMIT ?""",
+        (user_id, start, end, limit),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def evolution_range(db, user_id: int, start: str, end: str) -> dict:
+    """Receitas x despesas por mes dentro do intervalo [start, end]."""
+    rows = db.execute(
+        """SELECT strftime('%Y-%m', date) AS ym, type, SUM(amount) AS total
+           FROM transactions
+           WHERE user_id = ? AND date BETWEEN ? AND ?
+           GROUP BY ym, type""",
+        (user_id, start, end),
+    ).fetchall()
+    bucket = {}
+    for r in rows:
+        bucket.setdefault(r["ym"], {"income": 0.0, "expense": 0.0})
+        bucket[r["ym"]][r["type"]] = r["total"]
+
+    sy, sm = int(start[:4]), int(start[5:7])
+    ey, em = int(end[:4]), int(end[5:7])
+    n = (ey * 12 + em) - (sy * 12 + sm) + 1
+    n = max(1, min(n, 24))  # evita listas gigantes
+
+    labels, income_series, expense_series = [], [], []
+    for i in range(n):
+        y, m = _shift_month(sy, sm, i)
+        key = f"{y:04d}-{m:02d}"
+        labels.append(f"{MESES_CURTOS[m - 1]}/{str(y)[2:]}")
+        data = bucket.get(key, {})
+        income_series.append(round(data.get("income", 0.0), 2))
+        expense_series.append(round(data.get("expense", 0.0), 2))
+    return {"labels": labels, "income": income_series, "expense": expense_series}
+
+
+def build_report(db, user, start: str, end: str) -> dict:
+    """Pacote completo do relatorio para um intervalo de datas."""
+    user_id = user["id"] if user else 0
+    totals = period_totals(db, user_id, start, end)
+    income, expense = totals["income"], totals["expense"]
+
+    monthly_income = user["monthly_income"] if user else 0
+    monthly_hours = user["monthly_hours"] if user else 0
+    expense_hours = finance.cost_in_hours(expense, monthly_income, monthly_hours)
+
+    count = db.execute(
+        """SELECT COUNT(*) AS n FROM transactions
+           WHERE user_id = ? AND date BETWEEN ? AND ?""",
+        (user_id, start, end),
+    ).fetchone()["n"]
+
+    evolution = evolution_range(db, user_id, start, end)
+    n_months = max(1, len(evolution["labels"]))
+
+    return {
+        "start": start,
+        "end": end,
+        "income": income,
+        "expense": expense,
+        "balance": finance.month_balance(income, expense),
+        "expense_hours": expense_hours,
+        "expense_hours_label": finance.hours_to_hm(expense_hours),
+        "categories": expenses_by_category_period(db, user_id, start, end),
+        "top_expenses": top_expenses_period(db, user_id, start, end),
+        "evolution": evolution,
+        "count": count,
+        "avg_monthly_expense": expense / n_months,
+        "n_months": n_months,
+    }
+
+
 def build_dashboard(db, user, today: Optional[date] = None) -> dict:
     """Monta o pacote completo de dados do dashboard."""
     if today is None:

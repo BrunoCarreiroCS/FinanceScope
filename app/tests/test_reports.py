@@ -60,6 +60,24 @@ def test_top_expenses_respeita_limite(db):
     assert top[0]["description"] == "Aluguel"
 
 
+def test_build_report_por_periodo(db):
+    user = db.execute("SELECT * FROM users WHERE id=1").fetchone()
+    r = reports.build_report(db, user, "2026-06-01", "2026-06-30")
+    assert r["income"] == pytest.approx(3000)     # só junho
+    assert r["expense"] == pytest.approx(1700)     # Uber (maio) fora
+    assert r["balance"] == pytest.approx(1300)
+    assert r["count"] == 3
+    assert r["categories"][0]["name"] == "Moradia"
+
+
+def test_build_report_inclui_meses_no_intervalo(db):
+    user = db.execute("SELECT * FROM users WHERE id=1").fetchone()
+    r = reports.build_report(db, user, "2026-05-01", "2026-06-30")
+    # Maio tem o Uber (100), junho tem 1700 -> media = 1800/2 = 900
+    assert r["n_months"] == 2
+    assert r["avg_monthly_expense"] == pytest.approx(900)
+
+
 def test_expense_to_date_ignora_lancamentos_futuros(db):
     # Em 07/06: so o Aluguel (06/06) entra; Mercado (08/06) fica de fora.
     total = reports.expense_to_date(db, 1, date(2026, 6, 7))
