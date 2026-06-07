@@ -1,45 +1,112 @@
 {% extends "base.html" %}
+{% from "_macros.html" import info %}
 {% block title %}Simulador - {{ app_name }}{% endblock %}
 {% block page_title %}Posso comprar?{% endblock %}
 {% block page_subtitle %}Veja o impacto antes de decidir{% endblock %}
 
 {% block content %}
 <div class="grid grid-2">
+  <!-- Formulario -->
   <div class="card form-card">
-    <form class="form" autocomplete="off">
-      <label>Item
-        <input type="text" name="item_name" placeholder="Ex.: Tênis novo" disabled />
-      </label>
+    <form method="post" class="form" autocomplete="off">
+      <div class="form-row">
+        <label>Item
+          <input type="text" name="item_name" value="{{ form.item_name or '' }}"
+                 placeholder="Ex.: Tênis novo" />
+        </label>
+        {% if errors.item_name %}<span class="field-error">{{ errors.item_name }}</span>{% endif %}
+      </div>
+
       <div class="form-grid">
         <label>Valor (R$)
-          <input type="number" step="0.01" min="0" name="amount" disabled />
+          <input type="number" step="0.01" min="0" name="amount" value="{{ form.amount or '' }}" />
+          {% if errors.amount %}<span class="field-error">{{ errors.amount }}</span>{% endif %}
         </label>
-        <label>Parcelas
-          <input type="number" min="1" max="48" value="1" name="installments" disabled />
+        <label>
+          <span class="lbl">Parcelas {{ info("Em quantas vezes você pagaria. Mais parcelas diluem o impacto mensal e podem mudar o veredito.") }}</span>
+          <input type="number" min="1" max="48" name="installments" value="{{ form.installments or 1 }}" />
         </label>
         <label>Categoria
-          <select name="category_id" disabled><option>...</option></select>
-        </label>
-        <label>Prioridade
-          <select name="priority" disabled>
-            <option>Baixa</option><option>Média</option><option>Alta</option>
+          <select name="category_id">
+            <option value="">Sem categoria</option>
+            {% for c in categories %}
+              <option value="{{ c.id }}" {{ 'selected' if form.category_id == c.id|string }}>{{ c.name }}</option>
+            {% endfor %}
           </select>
         </label>
       </div>
-      <button type="submit" class="btn btn-primary" disabled>Simular (Fase 6)</button>
+
+      <div class="form-row">
+        <label>
+          <span class="lbl">Prioridade {{ info("O quão importante é essa compra para você. Ajuda a contextualizar a decisão (não altera os cálculos).") }}</span>
+          <select name="priority">
+            <option value="baixa" {{ 'selected' if form.priority == 'baixa' }}>Baixa</option>
+            <option value="media" {{ 'selected' if form.priority == 'media' }}>Média</option>
+            <option value="alta"  {{ 'selected' if form.priority == 'alta' }}>Alta</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Simular compra</button>
+      </div>
     </form>
   </div>
 
+  <!-- Resultado -->
   <div class="card">
     <h3 class="card-title">Resultado</h3>
-    <p class="muted">
-      Após simular, mostraremos: custo em horas de trabalho, % da renda,
-      classificação de risco e atraso da meta principal.
-    </p>
-    <p class="muted small">
-      Exemplo: "Esta compra equivale a 18h40 de trabalho e pode atrasar
-      sua meta em 1,2 mês, considerando os dados informados no perfil."
-    </p>
+    {% if result %}
+      {% if verdict %}
+      <div class="verdict verdict-{{ verdict.level }}">
+        <div class="verdict-badge">
+          {% if verdict.level == 'baixo' %}✓{% elif verdict.level == 'medio' %}!{% else %}✕{% endif %}
+        </div>
+        <div>
+          <strong class="verdict-label">{{ verdict.label }}</strong>
+          <p>{{ verdict.reason }}</p>
+        </div>
+      </div>
+      {% endif %}
+      <div class="rc-rows">
+        <div class="rc-row">
+          <span>Custo em tempo {{ info("Quantas horas de trabalho essa compra custa: valor ÷ (renda ÷ horas mensais).") }}</span>
+          <strong class="accent">
+            {{ result.hours_label if result.hours_label else '—' }}{% if result.hours_label %} de trabalho{% endif %}
+          </strong>
+        </div>
+        <div class="rc-row">
+          <span>Impacto na renda {{ info("Quanto a compra representa da sua renda mensal: (valor ÷ renda) × 100.") }}</span>
+          <strong>{{ '%.1f'|format(result.income_impact_pct) ~ '%' if result.income_impact_pct is not none else '—' }}</strong>
+        </div>
+        {% if result.installments > 1 %}
+        <div class="rc-row">
+          <span>Por parcela ({{ result.installments }}x) {{ info("Valor de cada parcela e quanto ela pesa na sua renda todo mês.") }}</span>
+          <strong>{{ result.installment_value|brl }} · {{ '%.1f'|format(result.monthly_impact_pct) ~ '%' if result.monthly_impact_pct is not none else '—' }} da renda</strong>
+        </div>
+        {% endif %}
+        <div class="rc-row">
+          <span>Atraso na meta {{ info("Quantos meses de aporte essa compra consome: valor ÷ aporte mensal da meta principal.") }}</span>
+          <strong class="down">
+            {% if result.goal_delay_months %}+{{ '%.1f'|format(result.goal_delay_months) }} meses{% else %}—{% endif %}
+          </strong>
+        </div>
+        <div class="rc-row">
+          <span>Risco {{ info("Classificação pelo impacto na renda: baixo (até 5%), médio (5–15%) ou alto (acima de 15%).") }}</span>
+          <span class="risk risk-{{ result.risk }}">{{ result.risk }}</span>
+        </div>
+      </div>
+      <p class="rc-msg">{{ result.message }}</p>
+    {% else %}
+      <p class="muted">
+        Preencha o item e o valor para ver: custo em horas de trabalho,
+        % da renda, classificação de risco e atraso da meta principal.
+      </p>
+      <p class="muted small">
+        Exemplo: "Esta compra equivale a 18h40 de trabalho e pode atrasar
+        sua meta em 1,2 meses, considerando os dados informados no perfil."
+      </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

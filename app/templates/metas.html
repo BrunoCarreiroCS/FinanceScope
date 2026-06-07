@@ -4,18 +4,63 @@
 {% block page_subtitle %}Objetivos e progresso estimado{% endblock %}
 
 {% block topbar_actions %}
-  <button class="btn btn-primary" disabled>+ Nova meta (Fase 6)</button>
+  <a href="{{ url_for('meta_nova') }}" class="btn btn-primary">+ Nova meta</a>
 {% endblock %}
 
 {% block content %}
+{% if goals %}
 <div class="grid grid-2">
-  <div class="card empty">
-    <h3 class="card-title">Sem metas cadastradas</h3>
-    <p class="muted">
-      Crie uma meta com valor alvo e aporte mensal. O sistema calculará
-      progresso e meses estimados pela fórmula
-      <code>(valor_alvo - valor_atual) / aporte_mensal</code>.
+  {% for g in goals %}
+  <div class="card goal">
+    <div class="goal-head">
+      <h3 class="card-title" style="margin:0">{{ g.name }}</h3>
+      <div class="actions">
+        <a href="{{ url_for('meta_editar', goal_id=g.id) }}" class="btn btn-sm">Editar</a>
+        <form method="post" action="{{ url_for('meta_excluir', goal_id=g.id) }}"
+              onsubmit="return confirm('Excluir esta meta?');" style="display:inline">
+          <button class="btn btn-sm btn-danger">Excluir</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="goal-amounts">
+      <span class="accent">{{ g.current_amount|brl }}</span>
+      <span class="muted">de {{ g.target_amount|brl }}</span>
+    </div>
+
+    <div class="progress"><span style="width: {{ '%.0f'|format(g.progress) }}%"></span></div>
+
+    <div class="goal-foot">
+      <span class="muted small">{{ '%.0f'|format(g.progress) }}% concluído</span>
+      {% if g.done %}
+        <span class="risk risk-baixo">meta atingida</span>
+      {% elif g.months is not none %}
+        <span class="muted small">≈ {{ '%.0f'|format(g.months) }} meses no ritmo atual</span>
+      {% else %}
+        <span class="muted small">defina um aporte mensal para estimar o prazo</span>
+      {% endif %}
+    </div>
+
+    {% if not g.done %}
+    <p class="muted small goal-hint">
+      Faltam {{ g.remaining|brl }}
+      {% if g.monthly_contribution %}· aporte de {{ g.monthly_contribution|brl }}/mês{% endif %}.
     </p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">
+  <h3 class="card-title">Sem metas cadastradas</h3>
+  <p class="muted">
+    Crie uma meta com valor alvo e aporte mensal. O sistema calcula o
+    progresso e os meses estimados pela fórmula
+    <code>(valor_alvo - valor_atual) / aporte_mensal</code>.
+  </p>
+  <div style="margin-top:14px">
+    <a href="{{ url_for('meta_nova') }}" class="btn btn-primary">+ Criar primeira meta</a>
   </div>
 </div>
+{% endif %}
 {% endblock %}

@@ -144,3 +144,35 @@ def test_analyze_purchase_sem_perfil_nao_quebra():
     assert r.income_impact_pct is None
     assert r.goal_delay_months is None
     assert "complete seu perfil" in r.message
+
+
+# --- veredito do simulador ------------------------------------------------
+
+def test_verdict_vale_a_pena():
+    # R$ 100 em 3000 de renda = 3,3% mensal, sem atraso relevante.
+    r = f.analyze_purchase(100, 1, 3000, 160, 500)
+    v = f.purchase_verdict(r)
+    assert v["level"] == f.RISK_LOW
+    assert v["label"] == "Vale a pena"
+
+
+def test_verdict_melhor_esperar():
+    # R$ 300 em 3000 = 10% mensal -> faixa moderada.
+    r = f.analyze_purchase(300, 1, 3000, 160, 500)
+    v = f.purchase_verdict(r)
+    assert v["level"] == f.RISK_MEDIUM
+    assert v["label"] == "Melhor esperar"
+
+
+def test_verdict_nao_compre_agora():
+    # R$ 6000 em 12x = 500/mes = 16,7% mensal -> alto.
+    r = f.analyze_purchase(6000, 12, 3000, 160, 500)
+    v = f.purchase_verdict(r)
+    assert v["level"] == f.RISK_HIGH
+    assert v["label"] == "Não compre agora"
+
+
+def test_verdict_sem_perfil():
+    r = f.analyze_purchase(200, 1, 0, 0, 0)
+    v = f.purchase_verdict(r)
+    assert v["label"] == "Avalie com cuidado"

@@ -2,6 +2,8 @@
 
 Sem login: usamos um usuario fixo (id=1) criado pelo schema.sql.
 """
+import json
+from dataclasses import asdict
 from datetime import date, datetime
 
 from flask import Flask, render_template, redirect, url_for, request, flash, g
@@ -385,13 +387,210 @@ def create_app():
         flash("Transação excluída.", "success")
         return redirect(url_for("transacoes"))
 
+    # --- Metas -------------------------------------------------------------
+
+    def _goal_view(row):
+        """Enriquece uma meta com progresso (%) e meses estimados."""
+        target = row["target_amount"] or 0
+        current = row["current_amount"] or 0
+        contribution = row["monthly_contribution"] or 0
+        progress = min((current / target * 100) if target > 0 else 0, 100)
+        months = finance.goal_months_remaining(target, current, contribution)
+        return {
+            "id": row["id"],
+            "name": row["name"],
+            "target_amount": target,
+            "current_amount": current,
+            "monthly_contribution": contribution,
+            "priority": row["priority"],
+            "progress": progress,
+            "remaining": max(target - current, 0),
+            "months": months,
+            "done": current >= target,
+        }
+
+    def _validate_goal(form):
+        """Valida o form de meta. Retorna (dados, errors)."""
+        errors, data = {}, {}
+        data["name"] = (form.get("name") or "").strip()
+        if not data["name"]:
+            errors["name"] = "Informe o nome da meta."
+
+        target, e = parse_decimal(form.get("target_amount"))
+        if e:
+            errors["target_amount"] = e
+        elif not target or target <= 0:
+            errors["target_amount"] = "O valor alvo deve ser maior que zero."
+        data["target_amount"] = target
+
+        current, e = parse_decimal(form.get("current_amount"))
+        if e:
+            errors["current_amount"] = e
+        data["current_amount"] = current or 0
+
+        contribution, e = parse_decimal(form.get("monthly_contribution"))
+        if e:
+            errors["monthly_contribution"] = e
+        data["monthly_contribution"] = contribution or 0
+
+        try:
+            data["priority"] = int(form.get("priority") or 2)
+        except ValueError:
+            data["priority"] = 2
+        return data, errors
+
     @app.route("/metas")
     def metas():
-        return render_template("metas.html", active="metas")
+        db = database.get_db()
+        rows = db.execute(
+            "SELECT * FROM goals WHERE user_id = ? ORDER BY priority, id",
+            (DEFAULT_USER_ID,),
+        ).fetchall()
+        goals = [_goal_view(r) for r in rows]
+        return render_template("metas.html", active="metas", goals=goals)
 
-    @app.route("/simulador")
+    @app.route("/metas/nova", methods=["GET", "POST"])
+    def meta_nova():
+        db = database.get_db()
+        if request.method == "POST":
+            data, errors = _validate_goal(request.form)
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "meta_form.html", active="metas",
+                    form=request.form, errors=errors, mode="nova",
+                ), 400
+            db.execute(
+                """INSERT INTO goals
+                   (user_id, name, target_amount, current_amount,
+                    monthly_contribution, priority)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (DEFAULT_USER_ID, data["name"], data["target_amount"],
+                 data["current_amount"], data["monthly_contribution"], data["priority"]),
+            )
+            db.commit()
+            flash("Meta criada.", "success")
+            return redirect(url_for("metas"))
+
+        form = {"priority": 2, "current_amount": 0}
+        return render_template(
+            "meta_form.html", active="metas", form=form, errors={}, mode="nova",
+        )
+
+    @app.route("/metas/<int:goal_id>/editar", methods=["GET", "POST"])
+    def meta_editar(goal_id):
+        db = database.get_db()
+        goal = db.execute(
+            "SELECT * FROM goals WHERE id = ? AND user_id = ?",
+            (goal_id, DEFAULT_USER_ID),
+        ).fetchone()
+        if goal is None:
+            flash("Meta não encontrada.", "error")
+            return redirect(url_for("metas"))
+
+        if request.method == "POST":
+            data, errors = _validate_goal(request.form)
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "meta_form.html", active="metas",
+                    form=request.form, errors=errors, mode="editar", goal_id=goal_id,
+                ), 400
+            db.execute(
+                """UPDATE goals
+                   SET name = ?, target_amount = ?, current_amount = ?,
+                       monthly_contribution = ?, priority = ?, updated_at = CURRENT_TIMESTAMP
+                   WHERE id = ? AND user_id = ?""",
+                (data["name"], data["target_amount"], data["current_amount"],
+                 data["monthly_contribution"], data["priority"], goal_id, DEFAULT_USER_ID),
+            )
+            db.commit()
+            flash("Meta atualizada.", "success")
+            return redirect(url_for("metas"))
+
+        return render_template(
+            "meta_form.html", active="metas", form=goal, errors={},
+            mode="editar", goal_id=goal_id,
+        )
+
+    @app.route("/metas/<int:goal_id>/excluir", methods=["POST"])
+    def meta_excluir(goal_id):
+        db = database.get_db()
+        db.execute(
+            "DELETE FROM goals WHERE id = ? AND user_id = ?",
+            (goal_id, DEFAULT_USER_ID),
+        )
+        db.commit()
+        flash("Meta excluída.", "success")
+        return redirect(url_for("metas"))
+
+    # --- Simulador "Posso comprar?" ---------------------------------------
+
+    @app.route("/simulador", methods=["GET", "POST"])
     def simulador():
-        return render_template("simulador.html", active="simulador")
+        db = database.get_db()
+        categories = get_categories(db, "expense")
+        result = None
+        verdict = None
+        form = {"installments": 1, "priority": "media"}
+
+        if request.method == "POST":
+            errors = {}
+            form = {
+                "item_name": (request.form.get("item_name") or "").strip(),
+                "amount": request.form.get("amount", ""),
+                "category_id": request.form.get("category_id") or "",
+                "installments": request.form.get("installments", "1"),
+                "priority": request.form.get("priority", "media"),
+            }
+            if not form["item_name"]:
+                errors["item_name"] = "Informe o item."
+            amount, e = parse_decimal(form["amount"])
+            if e:
+                errors["amount"] = e
+            elif not amount or amount <= 0:
+                errors["amount"] = "O valor deve ser maior que zero."
+            try:
+                installments = max(int(form["installments"]), 1)
+            except (ValueError, TypeError):
+                installments = 1
+
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "simulador.html", active="simulador",
+                    categories=categories, form=form, errors=errors,
+                    result=None, verdict=None,
+                ), 400
+
+            main_goal = get_main_goal(db, DEFAULT_USER_ID)
+            contribution = main_goal["monthly_contribution"] if main_goal else 0
+            user = g.user
+            result = finance.analyze_purchase(
+                amount=amount,
+                installments=installments,
+                monthly_income=user["monthly_income"] if user else 0,
+                monthly_hours=user["monthly_hours"] if user else 0,
+                monthly_contribution=contribution,
+            )
+            verdict = finance.purchase_verdict(result)
+
+            # Guarda a simulacao (alimenta historico/relatorios futuros).
+            db.execute(
+                """INSERT INTO purchase_simulations
+                   (user_id, item_name, amount, category_id, installments,
+                    risk_level, result_json)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (DEFAULT_USER_ID, form["item_name"], amount,
+                 int(form["category_id"]) if form["category_id"] else None,
+                 installments, result.risk, json.dumps(asdict(result))),
+            )
+            db.commit()
+
+        return render_template(
+            "simulador.html", active="simulador",
+            categories=categories, form=form, errors={}, result=result, verdict=verdict,
+        )
 
     return app
 

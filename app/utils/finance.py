@@ -128,6 +128,53 @@ class PurchaseAnalysis:
     message: str
 
 
+def purchase_verdict(analysis: "PurchaseAnalysis") -> dict:
+    """
+    Sugestao de decisao para o simulador "Posso Comprar?".
+
+    Nao e uma ordem: traduz o impacto em uma recomendacao explicavel, no
+    espirito do produto (ajudar a decidir, nao mandar). Usa o impacto MENSAL
+    (por parcela) como driver principal - assim parcelar muda o veredito - e
+    considera tambem o atraso na meta.
+
+    Retorna {level, label, reason}, onde level reaproveita as cores de risco
+    (baixo=verde, medio=amarelo, alto=vermelho).
+    """
+    impact = analysis.monthly_impact_pct
+    delay = analysis.goal_delay_months or 0
+
+    if impact is None:
+        return {
+            "level": RISK_MEDIUM,
+            "label": "Avalie com cuidado",
+            "reason": "Complete seu perfil (renda e horas) para uma recomendação "
+                      "mais precisa.",
+        }
+
+    if impact < 5 and delay <= 1:
+        return {
+            "level": RISK_LOW,
+            "label": "Vale a pena",
+            "reason": "O impacto mensal é baixo e cabe no seu orçamento, com base "
+                      "nos seus dados.",
+        }
+
+    if impact <= 15:
+        return {
+            "level": RISK_MEDIUM,
+            "label": "Melhor esperar",
+            "reason": "O impacto é moderado. Pode valer a pena juntar um pouco "
+                      "antes ou rever o parcelamento.",
+        }
+
+    return {
+        "level": RISK_HIGH,
+        "label": "Não compre agora",
+        "reason": "O impacto mensal é alto e, no ritmo atual, pode comprometer "
+                  "seu orçamento e atrasar suas metas.",
+    }
+
+
 def analyze_purchase(
     amount: float,
     installments: int,
