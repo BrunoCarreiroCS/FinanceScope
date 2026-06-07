@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtualenv
+.venv/
+venv/
+.env
+
+# Banco de dados / instance Flask
+instance/
+*.sqlite
+*.db
+
+# Testes / cache
+.pytest_cache/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
