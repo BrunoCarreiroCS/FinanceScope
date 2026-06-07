@@ -19,7 +19,11 @@ def db():
     with open(SCHEMA, "r", encoding="utf-8") as f:
         con.executescript(f.read())
 
-    con.execute("UPDATE users SET monthly_income=3000, monthly_hours=160, monthly_limit=2500 WHERE id=1")
+    con.execute(
+        """INSERT INTO users (id, name, email, password_hash,
+                              monthly_income, monthly_hours, monthly_limit)
+           VALUES (1, 'Teste', 'teste@financescope.app', 'x', 3000, 160, 2500)"""
+    )
     linhas = [
         ("income",  "Salário",   1, 3000, "2026-06-05"),
         ("expense", "Aluguel",   5, 1200, "2026-06-06"),
