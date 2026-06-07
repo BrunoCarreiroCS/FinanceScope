@@ -98,6 +98,10 @@ def create_app():
     # --- Rotas placeholder (serao implementadas nas proximas fases) ---
 
     @app.route("/")
+    def home():
+        return render_template("home.html")
+
+    @app.route("/app")
     def dashboard():
         return render_template("dashboard.html", active="dashboard")
 
