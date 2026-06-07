@@ -247,7 +247,7 @@ def create_app():
             errors["type"] = "Selecione receita ou despesa."
         data["description"] = (form.get("description") or "").strip()
         if not data["description"]:
-            errors["description"] = "Informe uma descricao."
+            errors["description"] = "Informe uma descrição."
 
         amount, e = parse_decimal(form.get("amount"))
         if e:
@@ -289,7 +289,7 @@ def create_app():
                  data["payment_method"], data["is_recurring"]),
             )
             db.commit()
-            flash("Transacao adicionada.", "success")
+            flash("Transação adicionada.", "success")
             return redirect(url_for("transacoes"))
 
         form = {"type": "expense", "date": date.today().strftime("%Y-%m-%d")}
@@ -306,7 +306,7 @@ def create_app():
             (tx_id, DEFAULT_USER_ID),
         ).fetchone()
         if tx is None:
-            flash("Transacao nao encontrada.", "error")
+            flash("Transação não encontrada.", "error")
             return redirect(url_for("transacoes"))
 
         if request.method == "POST":
@@ -329,7 +329,7 @@ def create_app():
                  data["is_recurring"], tx_id, DEFAULT_USER_ID),
             )
             db.commit()
-            flash("Transacao atualizada.", "success")
+            flash("Transação atualizada.", "success")
             return redirect(url_for("transacoes"))
 
         return render_template(
@@ -346,7 +346,7 @@ def create_app():
             (tx_id, DEFAULT_USER_ID),
         )
         db.commit()
-        flash("Transacao excluida.", "success")
+        flash("Transação excluída.", "success")
         return redirect(url_for("transacoes"))
 
     @app.route("/metas")

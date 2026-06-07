@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Transacoes - {{ app_name }}{% endblock %}
-{% block page_title %}Transacoes{% endblock %}
-{% block page_subtitle %}Receitas e despesas do periodo{% endblock %}
+{% block title %}Transações - {{ app_name }}{% endblock %}
+{% block page_title %}Transações{% endblock %}
+{% block page_subtitle %}Receitas e despesas do período{% endblock %}
 
 {% block topbar_actions %}
-  <a href="{{ url_for('transacao_nova') }}" class="btn btn-primary">+ Nova transacao</a>
+  <a href="{{ url_for('transacao_nova') }}" class="btn btn-primary">+ Nova transação</a>
 {% endblock %}
 
 {% block content %}
@@ -29,7 +29,7 @@
   </div>
   <div class="card kpi">
     <div class="kpi-top">
-      <span class="kpi-label">Saldo do periodo</span>
+      <span class="kpi-label">Saldo do período</span>
       <span class="kpi-chip {{ 'is-up' if balance >= 0 else 'is-down' }}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
       </span>
@@ -59,8 +59,8 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Data</th><th>Descricao</th><th>Categoria</th>
-        <th>Pagamento</th><th class="num">Valor</th><th class="num">Acoes</th>
+        <th>Data</th><th>Descrição</th><th>Categoria</th>
+        <th>Pagamento</th><th class="num">Valor</th><th class="num">Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -86,13 +86,13 @@
         <td class="num actions">
           <a href="{{ url_for('transacao_editar', tx_id=t.id) }}" class="btn btn-sm">Editar</a>
           <form method="post" action="{{ url_for('transacao_excluir', tx_id=t.id) }}"
-                onsubmit="return confirm('Excluir esta transacao?');" style="display:inline">
+                onsubmit="return confirm('Excluir esta transação?');" style="display:inline">
             <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
           </form>
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="6" class="muted center">Nenhuma transacao neste filtro.</td></tr>
+      <tr><td colspan="6" class="muted center">Nenhuma transação neste filtro.</td></tr>
       {% endfor %}
     </tbody>
   </table>

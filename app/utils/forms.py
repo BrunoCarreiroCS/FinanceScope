@@ -18,9 +18,9 @@ def parse_decimal(raw: Optional[str]) -> Tuple[Optional[float], Optional[str]]:
     try:
         value = float(s)
     except ValueError:
-        return None, "Informe um numero valido."
+        return None, "Informe um número válido."
     if value < 0:
-        return None, "O valor nao pode ser negativo."
+        return None, "O valor não pode ser negativo."
     return value, None
 
 
@@ -31,7 +31,7 @@ def parse_date(raw: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
     try:
         datetime.strptime(raw.strip(), "%Y-%m-%d")
     except ValueError:
-        return None, "Data invalida."
+        return None, "Data inválida."
     return raw.strip(), None
 
 
@@ -46,7 +46,7 @@ def parse_int(raw: Optional[str], default: int = 0) -> Tuple[Optional[int], Opti
     try:
         value = int(float(raw.strip().replace(",", ".")))
     except ValueError:
-        return None, "Informe um numero inteiro valido."
+        return None, "Informe um número inteiro válido."
     if value < 0:
-        return None, "O valor nao pode ser negativo."
+        return None, "O valor não pode ser negativo."
     return value, None

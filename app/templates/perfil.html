@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Perfil - {{ app_name }}{% endblock %}
 {% block page_title %}Perfil financeiro{% endblock %}
-{% block page_subtitle %}Base de calculo do RealCost Engine{% endblock %}
+{% block page_subtitle %}Base de cálculo do RealCost Engine{% endblock %}
 
 {% block content %}
 <div class="grid grid-2">
@@ -37,7 +37,7 @@
       <div class="form-row">
         <label>Nome da meta
           <input type="text" name="goal_name" value="{{ form.goal_name }}"
-                 placeholder="Ex.: Reserva de emergencia" />
+                 placeholder="Ex.: Reserva de emergência" />
         </label>
         {% if errors.goal_name %}<span class="field-error">{{ errors.goal_name }}</span>{% endif %}
       </div>
@@ -56,7 +56,7 @@
         <button type="submit" class="btn btn-primary">Salvar perfil</button>
       </div>
       <p class="muted small">
-        Formula da hora: <code>renda_mensal / horas_mensais</code>.
+        Fórmula da hora: <code>renda_mensal / horas_mensais</code>.
         Esses valores alimentam todo o RealCost.
       </p>
     </form>
@@ -78,7 +78,7 @@
       <p class="muted small">
         Com renda e horas preenchidas, o FinanceScope traduz cada gasto em
         <strong>tempo de trabalho</strong> e em <strong>% da sua renda</strong>,
-        alimentando o dashboard e o simulador "Posso Comprar?".
+        alimentando o dashboard e o simulador "Posso comprar?".
       </p>
       {% if main_goal %}
       <p class="muted small">

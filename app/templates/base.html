@@ -30,7 +30,7 @@
         </a>
         <a href="{{ url_for('transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13l-3-3"/><path d="M21 17H8l3 3"/></svg>
-          Transacoes
+          Transações
         </a>
         <a href="{{ url_for('metas') }}" class="nav-item {% if active=='metas' %}is-active{% endif %}">
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
@@ -49,7 +49,7 @@
       <div class="sidebar-footer">
         <div class="edu-note">
           <span class="edu-ico">i</span>
-          <p>As analises sao estimativas com base nos seus dados e nao substituem planejamento profissional.</p>
+          <p>As análises são estimativas com base nos seus dados e não substituem planejamento profissional.</p>
         </div>
       </div>
     </aside>
@@ -67,7 +67,7 @@
         </div>
         <div class="topbar-actions">
           {% block topbar_actions %}{% endblock %}
-          <div class="avatar" title="{{ user_name or 'Voce' }}">{{ (user_name or 'U')[0]|upper }}</div>
+          <div class="avatar" title="{{ user_name or 'Você' }}">{{ (user_name or 'U')[0]|upper }}</div>
         </div>
       </header>
 

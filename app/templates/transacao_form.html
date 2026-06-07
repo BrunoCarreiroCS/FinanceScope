@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% set is_edit = (mode == 'editar') %}
-{% block title %}{{ 'Editar' if is_edit else 'Nova' }} transacao - {{ app_name }}{% endblock %}
-{% block page_title %}{{ 'Editar transacao' if is_edit else 'Nova transacao' }}{% endblock %}
+{% block title %}{{ 'Editar' if is_edit else 'Nova' }} transação - {{ app_name }}{% endblock %}
+{% block page_title %}{{ 'Editar transação' if is_edit else 'Nova transação' }}{% endblock %}
 {% block page_subtitle %}{{ 'Atualize os dados' if is_edit else 'Registre uma receita ou despesa' }}{% endblock %}
 
 {% block content %}
@@ -25,9 +25,9 @@
     {% if errors.type %}<span class="field-error">{{ errors.type }}</span>{% endif %}
 
     <div class="form-row">
-      <label>Descricao
+      <label>Descrição
         <input type="text" name="description" value="{{ form.description or '' }}"
-               placeholder="Ex.: Mercado, Salario..." required />
+               placeholder="Ex.: Mercado, Salário..." required />
       </label>
       {% if errors.description %}<span class="field-error">{{ errors.description }}</span>{% endif %}
     </div>
@@ -55,7 +55,7 @@
     <div class="form-grid">
       <label>Forma de pagamento
         <input type="text" name="payment_method" value="{{ form.payment_method or '' }}"
-               placeholder="Ex.: Pix, Cartao, Dinheiro" />
+               placeholder="Ex.: Pix, Cartão, Dinheiro" />
       </label>
       <label class="check">
         <input type="checkbox" name="is_recurring" value="1"
