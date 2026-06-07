@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import info %}
 {% block title %}Perfil - {{ app_name }}{% endblock %}
 {% block page_title %}Perfil financeiro{% endblock %}
 {% block page_subtitle %}Base de cálculo do RealCost Engine{% endblock %}
@@ -15,17 +16,20 @@
       </div>
 
       <div class="form-grid">
-        <label>Renda mensal (R$)
+        <label>
+          <span class="lbl">Renda mensal (R$) {{ info("Quanto você recebe por mês (salário + outras fontes). Base para calcular o valor da sua hora e o impacto das compras.") }}</span>
           <input type="number" step="0.01" min="0" name="monthly_income"
                  id="income" value="{{ form.monthly_income }}" />
           {% if errors.monthly_income %}<span class="field-error">{{ errors.monthly_income }}</span>{% endif %}
         </label>
-        <label>Horas mensais
+        <label>
+          <span class="lbl">Horas mensais {{ info("Quantas horas você trabalha/estuda por mês. Ex.: 8h por dia × 20 dias = 160h. Usado para converter gastos em horas de trabalho.") }}</span>
           <input type="number" step="0.5" min="0" name="monthly_hours"
                  id="hours" value="{{ form.monthly_hours }}" />
           {% if errors.monthly_hours %}<span class="field-error">{{ errors.monthly_hours }}</span>{% endif %}
         </label>
-        <label>Limite planejado (R$)
+        <label>
+          <span class="lbl">Limite planejado (R$) {{ info("Quanto você pretende gastar no mês. Se a previsão de fechamento passar disso, o dashboard te avisa.") }}</span>
           <input type="number" step="0.01" min="0" name="monthly_limit"
                  value="{{ form.monthly_limit }}" />
           {% if errors.monthly_limit %}<span class="field-error">{{ errors.monthly_limit }}</span>{% endif %}
@@ -33,7 +37,9 @@
       </div>
 
       <hr class="divider" />
-      <h3 class="card-title">Meta principal <span class="muted small">(opcional)</span></h3>
+      <h3 class="card-title">Meta principal <span class="muted small">(opcional)</span>
+        {{ info("Seu objetivo financeiro principal. O sistema usa o aporte mensal para estimar quando você atinge a meta e quanto cada compra a atrasa.") }}
+      </h3>
       <div class="form-row">
         <label>Nome da meta
           <input type="text" name="goal_name" value="{{ form.goal_name }}"
@@ -42,11 +48,13 @@
         {% if errors.goal_name %}<span class="field-error">{{ errors.goal_name }}</span>{% endif %}
       </div>
       <div class="form-grid">
-        <label>Valor alvo (R$)
+        <label>
+          <span class="lbl">Valor alvo (R$) {{ info("Quanto você quer juntar no total para concluir a meta.") }}</span>
           <input type="number" step="0.01" min="0" name="goal_target" value="{{ form.goal_target }}" />
           {% if errors.goal_target %}<span class="field-error">{{ errors.goal_target }}</span>{% endif %}
         </label>
-        <label>Aporte mensal (R$)
+        <label>
+          <span class="lbl">Aporte mensal (R$) {{ info("Quanto você consegue guardar por mês para essa meta. Define o prazo estimado: (alvo − atual) ÷ aporte.") }}</span>
           <input type="number" step="0.01" min="0" name="goal_contribution" value="{{ form.goal_contribution }}" />
           {% if errors.goal_contribution %}<span class="field-error">{{ errors.goal_contribution }}</span>{% endif %}
         </label>

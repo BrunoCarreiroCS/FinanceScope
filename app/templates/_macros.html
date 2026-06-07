@@ -1,0 +1,6 @@
+{# Componentes reutilizaveis de UI. #}
+
+{# Icone "i" com tooltip explicativo. Acessivel via teclado (tabindex/focus). #}
+{% macro info(text) %}
+<span class="info" tabindex="0" role="img" aria-label="Ajuda: {{ text }}">i<span class="info-pop">{{ text }}</span></span>
+{% endmacro %}

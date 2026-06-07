@@ -245,6 +245,33 @@ code {
 }
 .form-actions { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
 .field-error { color: #fb7185; font-size: 12px; }
+
+/* tooltip de ajuda (icone "i") */
+.info {
+  display: inline-grid; place-items: center; vertical-align: middle;
+  width: 16px; height: 16px; margin-left: 6px; border-radius: 50%;
+  background: var(--surface-3); color: var(--text-muted);
+  font-size: 11px; font-style: italic; font-weight: 700; line-height: 1;
+  cursor: help; position: relative;
+}
+.info:hover, .info:focus { background: var(--accent-soft); color: var(--accent); outline: none; }
+.info-pop {
+  position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: 240px;
+  background: #0a0e13; border: 1px solid var(--border); border-radius: 9px;
+  padding: 9px 11px; font-size: 12px; font-style: normal; font-weight: 400;
+  color: var(--text-2); line-height: 1.45; text-align: left;
+  box-shadow: var(--shadow); z-index: 60;
+  opacity: 0; visibility: hidden; transition: opacity .15s;
+}
+.info-pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: var(--border);
+}
+.info:hover .info-pop, .info:focus .info-pop { opacity: 1; visibility: visible; }
+
+/* mantem rotulo + icone na mesma linha dentro de labels em coluna */
+.lbl { display: inline-flex; align-items: center; }
 .divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
 .side-col { display: flex; flex-direction: column; gap: 22px; }
 .form-card.narrow { max-width: 720px; }

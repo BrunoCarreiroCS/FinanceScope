@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import info %}
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -17,7 +18,7 @@
 
   <div class="card kpi">
     <div class="kpi-top">
-      <span class="kpi-label">Despesas do mês</span>
+      <span class="kpi-label">Despesas do mês {{ info("Total gasto no período. Abaixo, o equivalente em horas de trabalho (RealCost).") }}</span>
       <span class="kpi-chip is-down">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
       </span>
@@ -30,7 +31,7 @@
 
   <div class="card kpi">
     <div class="kpi-top">
-      <span class="kpi-label">Saldo</span>
+      <span class="kpi-label">Saldo {{ info("O que sobrou no mês: receitas − despesas. Verde é positivo, vermelho é negativo.") }}</span>
       <span class="kpi-chip is-info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
       </span>
@@ -41,7 +42,7 @@
 
   <div class="card kpi">
     <div class="kpi-top">
-      <span class="kpi-label">Previsão de fechamento</span>
+      <span class="kpi-label">Previsão de fechamento {{ info("Estimativa de quanto você vai gastar até o fim do mês, no ritmo atual: média diária de gastos × dias do mês.") }}</span>
       <span class="kpi-chip is-gold">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       </span>

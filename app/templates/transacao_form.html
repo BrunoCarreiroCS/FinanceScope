@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import info %}
 {% set is_edit = (mode == 'editar') %}
 {% block title %}{{ 'Editar' if is_edit else 'Nova' }} transação - {{ app_name }}{% endblock %}
 {% block page_title %}{{ 'Editar transação' if is_edit else 'Nova transação' }}{% endblock %}
@@ -60,7 +61,7 @@
       <label class="check">
         <input type="checkbox" name="is_recurring" value="1"
                {{ 'checked' if form.is_recurring }} />
-        <span>Despesa/receita recorrente</span>
+        <span>Despesa/receita recorrente {{ info("Marque se este lançamento se repete todo mês (ex.: aluguel, assinatura, salário).") }}</span>
       </label>
     </div>
 
