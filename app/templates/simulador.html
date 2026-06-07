@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Simulador - {{ app_name }}{% endblock %}
+{% block page_title %}Posso comprar?{% endblock %}
+{% block page_subtitle %}Veja o impacto antes de decidir{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card form-card">
+    <form class="form" autocomplete="off">
+      <label>Item
+        <input type="text" name="item_name" placeholder="Ex.: Tenis novo" disabled />
+      </label>
+      <div class="form-grid">
+        <label>Valor (R$)
+          <input type="number" step="0.01" min="0" name="amount" disabled />
+        </label>
+        <label>Parcelas
+          <input type="number" min="1" max="48" value="1" name="installments" disabled />
+        </label>
+        <label>Categoria
+          <select name="category_id" disabled><option>...</option></select>
+        </label>
+        <label>Prioridade
+          <select name="priority" disabled>
+            <option>Baixa</option><option>Media</option><option>Alta</option>
+          </select>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary" disabled>Simular (Fase 6)</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">Resultado</h3>
+    <p class="muted">
+      Apos simular, mostraremos: custo em horas de trabalho, % da renda,
+      classificacao de risco e atraso da meta principal.
+    </p>
+    <p class="muted small">
+      Exemplo: "Esta compra equivale a 18h40 de trabalho e pode atrasar
+      sua meta em 1,2 mes, considerando os dados informados no perfil."
+    </p>
+  </div>
+</div>
+{% endblock %}

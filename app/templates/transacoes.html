@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Transacoes - {{ app_name }}{% endblock %}
+{% block page_title %}Transacoes{% endblock %}
+{% block page_subtitle %}Receitas e despesas do mes{% endblock %}
+
+{% block topbar_actions %}
+  <button class="btn btn-primary" disabled>+ Nova transacao (Fase 3)</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="toolbar">
+    <input type="search" placeholder="Buscar descricao..." disabled />
+    <select disabled><option>Todas as categorias</option></select>
+    <select disabled><option>Receitas e despesas</option></select>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Data</th><th>Descricao</th><th>Categoria</th>
+        <th>Pagamento</th><th class="num">Valor</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="6" class="muted center">Nenhuma transacao ainda.</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Perfil - {{ app_name }}{% endblock %}
+{% block page_title %}Perfil financeiro{% endblock %}
+{% block page_subtitle %}Base de calculo do RealCost Engine{% endblock %}
+
+{% block content %}
+<div class="card form-card">
+  <form method="post" class="form" autocomplete="off">
+    <div class="form-row">
+      <label>Nome
+        <input type="text" name="name" value="{{ g.user.name if g.user else '' }}" required />
+      </label>
+    </div>
+    <div class="form-grid">
+      <label>Renda mensal (R$)
+        <input type="number" step="0.01" min="0" name="monthly_income"
+               value="{{ g.user.monthly_income if g.user else 0 }}" />
+      </label>
+      <label>Horas mensais
+        <input type="number" step="0.5" min="0" name="monthly_hours"
+               value="{{ g.user.monthly_hours if g.user else 0 }}" />
+      </label>
+      <label>Limite planejado (R$)
+        <input type="number" step="0.01" min="0" name="monthly_limit"
+               value="{{ g.user.monthly_limit if g.user else 0 }}" />
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" disabled>Salvar (Fase 2)</button>
+    </div>
+    <p class="muted small">
+      Formula da hora: <code>renda_mensal / horas_mensais</code>.
+      Esses valores alimentam todo o RealCost.
+    </p>
+  </form>
+</div>
+{% endblock %}

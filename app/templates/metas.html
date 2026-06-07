@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Metas - {{ app_name }}{% endblock %}
+{% block page_title %}Minhas metas{% endblock %}
+{% block page_subtitle %}Objetivos e progresso estimado{% endblock %}
+
+{% block topbar_actions %}
+  <button class="btn btn-primary" disabled>+ Nova meta (Fase 6)</button>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+  <div class="card empty">
+    <h3 class="card-title">Sem metas cadastradas</h3>
+    <p class="muted">
+      Crie uma meta com valor alvo e aporte mensal. O sistema calculara
+      progresso e meses estimados pela formula
+      <code>(valor_alvo - valor_atual) / aporte_mensal</code>.
+    </p>
+  </div>
+</div>
+{% endblock %}

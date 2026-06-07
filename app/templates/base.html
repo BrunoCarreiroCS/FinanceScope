@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">FS</span>
+        <span class="brand-name">{{ app_name }}</span>
+      </div>
+      <nav class="nav">
+        <a href="{{ url_for('dashboard') }}"  class="nav-item {% if active=='dashboard'  %}is-active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">Transacoes</a>
+        <a href="{{ url_for('metas') }}"      class="nav-item {% if active=='metas'      %}is-active{% endif %}">Metas</a>
+        <a href="{{ url_for('simulador') }}"  class="nav-item {% if active=='simulador'  %}is-active{% endif %}">Simulador</a>
+        <a href="{{ url_for('perfil') }}"     class="nav-item {% if active=='perfil'     %}is-active{% endif %}">Perfil</a>
+      </nav>
+      <div class="sidebar-footer">
+        <p class="muted small">
+          Analises sao estimativas baseadas nos dados informados e nao substituem
+          planejamento financeiro profissional.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+          <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+        </div>
+        <div class="topbar-actions">
+          {% block topbar_actions %}{% endblock %}
+        </div>
+      </header>
+
+      <section class="content">
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+</body>
+</html>

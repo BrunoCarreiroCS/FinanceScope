@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Visao geral do seu mes{% endblock %}
+
+{% block content %}
+<div class="grid grid-cards">
+  <div class="card kpi">
+    <span class="kpi-label">Receitas</span>
+    <span class="kpi-value income">R$ 0,00</span>
+    <span class="kpi-hint muted small">no mes</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Despesas</span>
+    <span class="kpi-value expense">R$ 0,00</span>
+    <span class="kpi-hint muted small">no mes</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Saldo</span>
+    <span class="kpi-value">R$ 0,00</span>
+    <span class="kpi-hint muted small">receitas - despesas</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Previsao de fechamento</span>
+    <span class="kpi-value">R$ 0,00</span>
+    <span class="kpi-hint muted small">media diaria * dias do mes</span>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 class="card-title">Gastos por categoria</h3>
+    <div class="chart-placeholder">Em breve (Fase 4)</div>
+  </div>
+  <div class="card">
+    <h3 class="card-title">Evolucao mensal</h3>
+    <div class="chart-placeholder">Em breve (Fase 4)</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 class="card-title">Maiores gastos</h3>
+  <p class="muted">Os rankings aparecem aqui apos cadastrar transacoes.</p>
+</div>
+{% endblock %}
