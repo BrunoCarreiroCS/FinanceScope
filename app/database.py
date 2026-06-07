@@ -7,7 +7,10 @@ DB_FILENAME = "financescope.sqlite"
 
 
 def get_db_path():
-    return os.path.join(current_app.instance_path, DB_FILENAME)
+    # Permite sobrescrever o caminho (ex.: banco temporario em testes).
+    return current_app.config.get("DATABASE") or os.path.join(
+        current_app.instance_path, DB_FILENAME
+    )
 
 
 def get_db():

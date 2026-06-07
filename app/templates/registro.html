@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Criar conta — {{ app_name }}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="auth">
+  <div class="auth-card">
+    <a href="{{ url_for('home') }}" class="brand auth-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      </span>
+      <span class="brand-name">Finance<strong>Scope</strong></span>
+    </a>
+
+    <h1 class="auth-title">Criar conta</h1>
+    <p class="muted">Leva menos de um minuto. Seus dados ficam só seus.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, msg in messages %}
+        <div class="flash flash-{{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="post" class="form" autocomplete="on">
+      <label>Nome
+        <input type="text" name="name" value="{{ form.name or '' }}" required autofocus />
+        {% if errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+      </label>
+      <label>E-mail
+        <input type="email" name="email" value="{{ form.email or '' }}" required />
+        {% if errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+      </label>
+      <label>Senha
+        <input type="password" name="password" required />
+        {% if errors.password %}<span class="field-error">{{ errors.password }}</span>{% endif %}
+      </label>
+      <label>Confirmar senha
+        <input type="password" name="confirm" required />
+        {% if errors.confirm %}<span class="field-error">{{ errors.confirm }}</span>{% endif %}
+      </label>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Criar conta</button>
+    </form>
+
+    <p class="muted small auth-alt">
+      Já tem conta? <a href="{{ url_for('login') }}" class="link">Entrar</a>
+    </p>
+  </div>
+</body>
+</html>

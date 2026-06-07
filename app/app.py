@@ -1,19 +1,25 @@
-"""FinanceScope - aplicacao Flask (MVP).
+"""FinanceScope - aplicacao Flask.
 
-Sem login: usamos um usuario fixo (id=1) criado pelo schema.sql.
+Autenticacao por sessao: cada usuario ve e edita apenas os proprios dados.
 """
 import json
+import os
 from dataclasses import asdict
 from datetime import date, datetime
 
-from flask import Flask, render_template, redirect, url_for, request, flash, g
+from flask import (Flask, render_template, redirect, url_for, request,
+                   flash, session, g)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import database
 import seeds
 from utils import finance, reports
 from utils.forms import parse_decimal, parse_date
 
-DEFAULT_USER_ID = 1
+
+def uid():
+    """ID do usuario logado (garantido pelo guard require_login)."""
+    return g.user["id"]
 
 
 def get_main_goal(db, user_id):
@@ -55,9 +61,14 @@ def date_br(value):
     return value.strftime("%d/%m/%Y")
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "dev-financescope"  # trocar em producao
+    app.config["SECRET_KEY"] = os.environ.get(
+        "SECRET_KEY", "dev-financescope-troque-em-producao"
+    )
+    app.config["DATABASE"] = os.path.join(app.instance_path, database.DB_FILENAME)
+    if test_config:
+        app.config.update(test_config)
     database.init_app(app)
     seeds.register(app)
 
@@ -91,17 +102,99 @@ def create_app():
 
     @app.before_request
     def load_user():
-        try:
-            db = database.get_db()
-            g.user = db.execute(
-                "SELECT * FROM users WHERE id = ?", (DEFAULT_USER_ID,)
-            ).fetchone()
-        except Exception:
-            g.user = None
+        g.user = None
+        user_id = session.get("user_id")
+        if user_id is not None:
+            try:
+                db = database.get_db()
+                g.user = db.execute(
+                    "SELECT * FROM users WHERE id = ?", (user_id,)
+                ).fetchone()
+            except Exception:
+                g.user = None
 
-    # --- Rotas -------------------------------------------------------------
-    # Home (landing) em "/"; o app em si fica sob "/app".
-    # Metas e simulador entram na Fase 6.
+    PUBLIC_ENDPOINTS = {"home", "login", "registro", "static"}
+
+    @app.before_request
+    def require_login():
+        # Tudo e protegido por padrao; paginas publicas em PUBLIC_ENDPOINTS.
+        if request.endpoint in PUBLIC_ENDPOINTS or request.endpoint is None:
+            return
+        if g.user is None:
+            return redirect(url_for("login", next=request.path))
+
+    # --- Autenticacao ------------------------------------------------------
+
+    @app.route("/registro", methods=["GET", "POST"])
+    def registro():
+        if g.user:
+            return redirect(url_for("dashboard"))
+        if request.method == "POST":
+            name = (request.form.get("name") or "").strip()
+            email = (request.form.get("email") or "").strip().lower()
+            password = request.form.get("password") or ""
+            confirm = request.form.get("confirm") or ""
+            errors = {}
+            if not name:
+                errors["name"] = "Informe seu nome."
+            if "@" not in email or "." not in email:
+                errors["email"] = "Informe um e-mail válido."
+            if len(password) < 6:
+                errors["password"] = "A senha deve ter ao menos 6 caracteres."
+            if password != confirm:
+                errors["confirm"] = "As senhas não conferem."
+
+            db = database.get_db()
+            if not errors and db.execute(
+                "SELECT 1 FROM users WHERE email = ?", (email,)
+            ).fetchone():
+                errors["email"] = "Já existe uma conta com esse e-mail."
+
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "registro.html", form={"name": name, "email": email}, errors=errors
+                ), 400
+
+            cur = db.execute(
+                "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+                (name, email, generate_password_hash(password)),
+            )
+            db.commit()
+            session.clear()
+            session["user_id"] = cur.lastrowid
+            flash("Conta criada! Comece preenchendo seu perfil financeiro.", "success")
+            return redirect(url_for("perfil"))
+        return render_template("registro.html", form={}, errors={})
+
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        if g.user:
+            return redirect(url_for("dashboard"))
+        if request.method == "POST":
+            email = (request.form.get("email") or "").strip().lower()
+            password = request.form.get("password") or ""
+            db = database.get_db()
+            user = db.execute(
+                "SELECT * FROM users WHERE email = ?", (email,)
+            ).fetchone()
+            if user is None or not check_password_hash(user["password_hash"], password):
+                flash("E-mail ou senha incorretos.", "error")
+                return render_template("login.html", form={"email": email}), 400
+            session.clear()
+            session["user_id"] = user["id"]
+            nxt = request.args.get("next")
+            return redirect(nxt if nxt and nxt.startswith("/") else url_for("dashboard"))
+        return render_template("login.html", form={})
+
+    @app.route("/sair", methods=["POST"])
+    def sair():
+        session.clear()
+        flash("Você saiu da sua conta.", "success")
+        return redirect(url_for("home"))
+
+    # --- App ---------------------------------------------------------------
+    # Home (landing) publica em "/"; o app em si fica sob "/app".
 
     @app.route("/")
     def home():
@@ -116,7 +209,7 @@ def create_app():
     @app.route("/perfil", methods=["GET", "POST"])
     def perfil():
         db = database.get_db()
-        main_goal = get_main_goal(db, DEFAULT_USER_ID)
+        main_goal = get_main_goal(db, uid())
 
         if request.method == "POST":
             errors = {}
@@ -170,7 +263,7 @@ def create_app():
                    SET name = ?, monthly_income = ?, monthly_hours = ?,
                        monthly_limit = ?, updated_at = CURRENT_TIMESTAMP
                    WHERE id = ?""",
-                (form["name"], income, hours, limit, DEFAULT_USER_ID),
+                (form["name"], income, hours, limit, uid()),
             )
 
             if goal_filled:
@@ -188,7 +281,7 @@ def create_app():
                            (user_id, name, target_amount, current_amount,
                             monthly_contribution, priority)
                            VALUES (?, ?, ?, 0, ?, 1)""",
-                        (DEFAULT_USER_ID, form["goal_name"], target, contribution or 0),
+                        (uid(), form["goal_name"], target, contribution or 0),
                     )
 
             db.commit()
@@ -222,7 +315,7 @@ def create_app():
                  FROM transactions t
                  LEFT JOIN categories c ON c.id = t.category_id
                  WHERE t.user_id = ?"""
-        params = [DEFAULT_USER_ID]
+        params = [uid()]
         if f_month:
             sql += " AND strftime('%Y-%m', t.date) = ?"
             params.append(f_month)
@@ -254,7 +347,7 @@ def create_app():
                FROM transactions t
                LEFT JOIN categories c ON c.id = t.category_id
                WHERE t.id = ? AND t.user_id = ?""",
-            (tx_id, DEFAULT_USER_ID),
+            (tx_id, uid()),
         ).fetchone()
         if tx is None:
             flash("Transação não encontrada.", "error")
@@ -263,7 +356,7 @@ def create_app():
         # RealCost so faz sentido para despesas. Reusa o mesmo motor do simulador.
         analysis = None
         if tx["type"] == "expense" and g.user:
-            main_goal = get_main_goal(db, DEFAULT_USER_ID)
+            main_goal = get_main_goal(db, uid())
             contribution = main_goal["monthly_contribution"] if main_goal else 0
             analysis = finance.analyze_purchase(
                 amount=tx["amount"],
@@ -322,7 +415,7 @@ def create_app():
                    (user_id, type, description, category_id, amount, date,
                     payment_method, is_recurring)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (DEFAULT_USER_ID, data["type"], data["description"],
+                (uid(), data["type"], data["description"],
                  data["category_id"], data["amount"], data["date"],
                  data["payment_method"], data["is_recurring"]),
             )
@@ -341,7 +434,7 @@ def create_app():
         db = database.get_db()
         tx = db.execute(
             "SELECT * FROM transactions WHERE id = ? AND user_id = ?",
-            (tx_id, DEFAULT_USER_ID),
+            (tx_id, uid()),
         ).fetchone()
         if tx is None:
             flash("Transação não encontrada.", "error")
@@ -364,7 +457,7 @@ def create_app():
                    WHERE id = ? AND user_id = ?""",
                 (data["type"], data["description"], data["category_id"],
                  data["amount"], data["date"], data["payment_method"],
-                 data["is_recurring"], tx_id, DEFAULT_USER_ID),
+                 data["is_recurring"], tx_id, uid()),
             )
             db.commit()
             flash("Transação atualizada.", "success")
@@ -381,7 +474,7 @@ def create_app():
         db = database.get_db()
         db.execute(
             "DELETE FROM transactions WHERE id = ? AND user_id = ?",
-            (tx_id, DEFAULT_USER_ID),
+            (tx_id, uid()),
         )
         db.commit()
         flash("Transação excluída.", "success")
@@ -444,7 +537,7 @@ def create_app():
         db = database.get_db()
         rows = db.execute(
             "SELECT * FROM goals WHERE user_id = ? ORDER BY priority, id",
-            (DEFAULT_USER_ID,),
+            (uid(),),
         ).fetchall()
         goals = [_goal_view(r) for r in rows]
         return render_template("metas.html", active="metas", goals=goals)
@@ -465,7 +558,7 @@ def create_app():
                    (user_id, name, target_amount, current_amount,
                     monthly_contribution, priority)
                    VALUES (?, ?, ?, ?, ?, ?)""",
-                (DEFAULT_USER_ID, data["name"], data["target_amount"],
+                (uid(), data["name"], data["target_amount"],
                  data["current_amount"], data["monthly_contribution"], data["priority"]),
             )
             db.commit()
@@ -482,7 +575,7 @@ def create_app():
         db = database.get_db()
         goal = db.execute(
             "SELECT * FROM goals WHERE id = ? AND user_id = ?",
-            (goal_id, DEFAULT_USER_ID),
+            (goal_id, uid()),
         ).fetchone()
         if goal is None:
             flash("Meta não encontrada.", "error")
@@ -502,7 +595,7 @@ def create_app():
                        monthly_contribution = ?, priority = ?, updated_at = CURRENT_TIMESTAMP
                    WHERE id = ? AND user_id = ?""",
                 (data["name"], data["target_amount"], data["current_amount"],
-                 data["monthly_contribution"], data["priority"], goal_id, DEFAULT_USER_ID),
+                 data["monthly_contribution"], data["priority"], goal_id, uid()),
             )
             db.commit()
             flash("Meta atualizada.", "success")
@@ -518,7 +611,7 @@ def create_app():
         db = database.get_db()
         db.execute(
             "DELETE FROM goals WHERE id = ? AND user_id = ?",
-            (goal_id, DEFAULT_USER_ID),
+            (goal_id, uid()),
         )
         db.commit()
         flash("Meta excluída.", "success")
@@ -563,7 +656,7 @@ def create_app():
                     result=None, verdict=None,
                 ), 400
 
-            main_goal = get_main_goal(db, DEFAULT_USER_ID)
+            main_goal = get_main_goal(db, uid())
             contribution = main_goal["monthly_contribution"] if main_goal else 0
             user = g.user
             result = finance.analyze_purchase(
@@ -581,7 +674,7 @@ def create_app():
                    (user_id, item_name, amount, category_id, installments,
                     risk_level, result_json)
                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                (DEFAULT_USER_ID, form["item_name"], amount,
+                (uid(), form["item_name"], amount,
                  int(form["category_id"]) if form["category_id"] else None,
                  installments, result.risk, json.dumps(asdict(result))),
             )

@@ -19,7 +19,14 @@
       </span>
       <span class="brand-name">Finance<strong>Scope</strong></span>
     </div>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Entrar no app →</a>
+    {% if g.user %}
+      <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Ir para o app →</a>
+    {% else %}
+      <nav class="home-nav-links">
+        <a href="{{ url_for('login') }}" class="btn btn-ghost">Entrar</a>
+        <a href="{{ url_for('registro') }}" class="btn btn-primary">Criar conta →</a>
+      </nav>
+    {% endif %}
   </header>
 
   <!-- Hero -->
@@ -44,8 +51,13 @@
       </ul>
 
       <div class="hero-cta">
-        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Começar agora →</a>
-        <a href="{{ url_for('simulador') }}" class="btn btn-ghost btn-lg">Ver o simulador</a>
+        {% if g.user %}
+          <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Ir para o app →</a>
+          <a href="{{ url_for('simulador') }}" class="btn btn-ghost btn-lg">Ver o simulador</a>
+        {% else %}
+          <a href="{{ url_for('registro') }}" class="btn btn-primary btn-lg">Começar agora →</a>
+          <a href="{{ url_for('login') }}" class="btn btn-ghost btn-lg">Já tenho conta</a>
+        {% endif %}
       </div>
     </div>
 

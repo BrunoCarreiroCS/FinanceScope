@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
     monthly_income REAL NOT NULL DEFAULT 0,
     monthly_hours REAL NOT NULL DEFAULT 0,
     monthly_limit REAL NOT NULL DEFAULT 0,
@@ -69,10 +71,8 @@ CREATE TABLE purchase_simulations (
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
--- Seed: usuario padrao do MVP (sem login) e categorias iniciais.
-INSERT INTO users (id, name, monthly_income, monthly_hours, monthly_limit)
-VALUES (1, 'Usuário FinanceScope', 0, 0, 0);
-
+-- Seed: categorias padrao (globais, compartilhadas por todos os usuarios).
+-- Usuarios sao criados via cadastro (/registro).
 INSERT INTO categories (name, type, color, is_default) VALUES
     ('Salário',        'income',  '#22c55e', 1),
     ('Freelance',      'income',  '#10b981', 1),
