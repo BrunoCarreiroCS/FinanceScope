@@ -27,11 +27,7 @@
 
     <aside class="sidebar" id="sidebar">
       <a href="{{ url_for('home') }}" class="brand" title="Voltar à página inicial">
-        <span class="brand-mark">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
-          </svg>
-        </span>
+        <img class="brand-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="FinanceScope" />
         <span class="brand-text">
           <span class="brand-name">Finance<strong>Scope</strong></span>
           <span class="brand-tag">Decida melhor. Viva leve.</span>
