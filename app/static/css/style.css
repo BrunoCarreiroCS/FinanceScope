@@ -43,14 +43,20 @@ html, body { height: 100%; margin: 0; }
 body {
   font-family: var(--font);
   color: var(--text);
-  /* Fundo: grid sutil (32px) sobre tom escuro liso. Estilo Binance/SaaS sério.
-     Padrão fixo no viewport — não distorce ao redimensionar. */
+  /* Fundo em 3 camadas (do topo p/ baixo):
+     1) Tile 256x256 com a logo branca pequena (decoração da marca)
+     2) Grid 32x32 sutil (estilo Binache/SaaS)
+     3) Cor de fundo escura lisa
+     background-attachment: fixed -> não distorce ao redimensionar */
   background-color: var(--bg);
   background-image:
+    url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-size: 256px 256px, 32px 32px, 32px 32px;
   background-attachment: fixed;
+  /* Opacidade do pattern controlada via filter no body — assim só ele fica
+     translucido sem afetar o conteúdo. Usa-se contraste/brilho do CSS */
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -198,10 +204,11 @@ body.auth {
   background-color: var(--bg);
   background-image:
     radial-gradient(circle at 50% 0%, rgba(22, 199, 132, 0.12), transparent 60%),
+    url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 100vh, 32px 32px, 32px 32px;
-  background-repeat: no-repeat, repeat, repeat;
+  background-size: 100% 100vh, 256px 256px, 32px 32px, 32px 32px;
+  background-repeat: no-repeat, repeat, repeat, repeat;
   background-attachment: fixed;
 }
 .auth-card {
@@ -635,15 +642,16 @@ body.auth {
    ========================================================================= */
 
 body.home {
-  /* Mesmo grid sutil do app, mas com um glow verde só no topo (fixo no viewport
-     para não distorcer ao redimensionar). */
+  /* Glow verde + pattern de logos + grid + tom escuro liso. Tudo fixo no
+     viewport para não distorcer ao redimensionar. */
   background-color: var(--bg);
   background-image:
     radial-gradient(circle at 50% 0%, rgba(22, 199, 132, 0.12), transparent 60%),
+    url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 100vh, 32px 32px, 32px 32px;
-  background-repeat: no-repeat, repeat, repeat;
+  background-size: 100% 100vh, 256px 256px, 32px 32px, 32px 32px;
+  background-repeat: no-repeat, repeat, repeat, repeat;
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
@@ -657,25 +665,26 @@ body.home {
 .home-nav .brand-name { font-size: 18px; }
 .home-nav-links { display: flex; gap: 10px; align-items: center; }
 
-/* Watermark da logo: enorme e bem sutil atrás do hero, decoração só */
+/* Watermark da logo: enorme atrás do hero. Dessaturado pra não brigar com a
+   identidade verde, mas mais aparente que o pattern do fundo. */
 .home-watermark {
   position: absolute;
-  top: 8%;
-  right: -120px;
+  top: 6%;
+  right: -100px;
   width: 580px;
-  max-width: 60vw;
-  opacity: 0.05;
+  max-width: 55vw;
+  opacity: 0.10;
+  filter: grayscale(1) brightness(1.4);
   pointer-events: none;
-  z-index: 0;
-  filter: blur(0.5px);
   user-select: none;
+  z-index: 0;
 }
 .hero, .features, .trust, .home-foot, .home-nav { position: relative; z-index: 1; }
 
 @media (max-width: 880px) {
   .home-watermark {
     top: auto; bottom: -40px; right: -80px;
-    width: 380px; opacity: 0.04;
+    width: 380px; opacity: 0.08;
   }
 }
 
