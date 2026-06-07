@@ -2,9 +2,9 @@
 
 Sem login: usamos um usuario fixo (id=1) criado pelo schema.sql.
 """
-from flask import Flask, render_template, redirect, url_for, request, flash, g
-
 from datetime import date, datetime
+
+from flask import Flask, render_template, redirect, url_for, request, flash, g
 
 import database
 import seeds
@@ -97,7 +97,9 @@ def create_app():
         except Exception:
             g.user = None
 
-    # --- Rotas placeholder (serao implementadas nas proximas fases) ---
+    # --- Rotas -------------------------------------------------------------
+    # Home (landing) em "/"; o app em si fica sob "/app".
+    # Metas e simulador entram na Fase 6.
 
     @app.route("/")
     def home():
