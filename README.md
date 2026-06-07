@@ -1,6 +1,6 @@
 # FinanceScope
 
-[![CI](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanScope/actions/workflows/ci.yml)
+[![CI](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Flask](https://img.shields.io/badge/flask-3.x-black)
 ![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen)

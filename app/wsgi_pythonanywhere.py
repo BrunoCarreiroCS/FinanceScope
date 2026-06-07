@@ -11,7 +11,7 @@ import os
 import sys
 
 # Caminho da pasta 'app' do projeto (onde fica o app.py).
-path = "/home/USERNAME/FinanScope/app"
+path = "/home/USERNAME/FinanceScope/app"
 if path not in sys.path:
     sys.path.insert(0, path)
 

@@ -19,14 +19,14 @@ um app com login.
 Na aba **Consoles → Bash**, rode:
 
 ```bash
-git clone https://github.com/BrunoCarreiroCS/FinanScope.git
+git clone https://github.com/BrunoCarreiroCS/FinanceScope.git
 ```
 
 ## 3. Criar o ambiente virtual e instalar dependências
 
 ```bash
 mkvirtualenv --python=/usr/bin/python3.11 financescope
-pip install -r ~/FinanScope/app/requirements.txt
+pip install -r ~/FinanceScope/app/requirements.txt
 ```
 
 > O ambiente `financescope` fica em `/home/SEU_USUARIO/.virtualenvs/financescope`.
@@ -34,7 +34,7 @@ pip install -r ~/FinanScope/app/requirements.txt
 ## 4. Criar o banco de dados
 
 ```bash
-cd ~/FinanScope/app
+cd ~/FinanceScope/app
 flask init-db        # cria as tabelas + categorias padrão
 flask seed-demo      # opcional: cria o usuário demo com dados de exemplo
 ```
@@ -50,7 +50,7 @@ Na aba **Web → Add a new web app**:
 3. Em **Virtualenv**, informe:
    `/home/SEU_USUARIO/.virtualenvs/financescope`
 4. Em **Source code** / **Working directory**, informe:
-   `/home/SEU_USUARIO/FinanScope/app`
+   `/home/SEU_USUARIO/FinanceScope/app`
 
 ## 6. Editar o arquivo WSGI
 
@@ -83,7 +83,7 @@ Acesse pelo celular, crie sua conta e use normalmente. 🎉
 No Bash:
 
 ```bash
-cd ~/FinanScope && git pull
+cd ~/FinanceScope && git pull
 ```
 
 Depois clique em **Reload** na aba Web.
