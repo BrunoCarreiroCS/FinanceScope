@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1280" />
   <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
@@ -12,32 +15,59 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
-        <span class="brand-mark">FS</span>
-        <span class="brand-name">{{ app_name }}</span>
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
+          </svg>
+        </span>
+        <span class="brand-name">Finance<strong>Scope</strong></span>
       </div>
+
       <nav class="nav">
-        <a href="{{ url_for('dashboard') }}"  class="nav-item {% if active=='dashboard'  %}is-active{% endif %}">Dashboard</a>
-        <a href="{{ url_for('transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">Transacoes</a>
-        <a href="{{ url_for('metas') }}"      class="nav-item {% if active=='metas'      %}is-active{% endif %}">Metas</a>
-        <a href="{{ url_for('simulador') }}"  class="nav-item {% if active=='simulador'  %}is-active{% endif %}">Simulador</a>
-        <a href="{{ url_for('perfil') }}"     class="nav-item {% if active=='perfil'     %}is-active{% endif %}">Perfil</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-item {% if active=='dashboard' %}is-active{% endif %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Dashboard
+        </a>
+        <a href="{{ url_for('transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13l-3-3"/><path d="M21 17H8l3 3"/></svg>
+          Transacoes
+        </a>
+        <a href="{{ url_for('metas') }}" class="nav-item {% if active=='metas' %}is-active{% endif %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+          Metas
+        </a>
+        <a href="{{ url_for('simulador') }}" class="nav-item {% if active=='simulador' %}is-active{% endif %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11"/><line x1="12" y1="11" x2="12" y2="11"/><line x1="16" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/></svg>
+          Simulador
+        </a>
+        <a href="{{ url_for('perfil') }}" class="nav-item {% if active=='perfil' %}is-active{% endif %}">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          Perfil
+        </a>
       </nav>
+
       <div class="sidebar-footer">
-        <p class="muted small">
-          Analises sao estimativas baseadas nos dados informados e nao substituem
-          planejamento financeiro profissional.
-        </p>
+        <div class="edu-note">
+          <span class="edu-ico">i</span>
+          <p>As analises sao estimativas com base nos seus dados e nao substituem planejamento profissional.</p>
+        </div>
       </div>
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <div>
-          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
-          <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+        <div class="topbar-greet">
+          {% if active == 'dashboard' and user_name %}
+            <p class="greet-hi">{{ greeting }},</p>
+            <h1 class="greet-name">{{ user_name }} 👋</h1>
+          {% else %}
+            <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+            <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+          {% endif %}
         </div>
         <div class="topbar-actions">
           {% block topbar_actions %}{% endblock %}
+          <div class="avatar" title="{{ user_name or 'Voce' }}">{{ (user_name or 'U')[0]|upper }}</div>
         </div>
       </header>
 

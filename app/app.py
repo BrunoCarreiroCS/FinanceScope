@@ -4,7 +4,7 @@ Sem login: usamos um usuario fixo (id=1) criado pelo schema.sql.
 """
 from flask import Flask, render_template, redirect, url_for, request, flash, g
 
-from datetime import date
+from datetime import date, datetime
 
 import database
 from utils import finance
@@ -63,11 +63,27 @@ def create_app():
     @app.context_processor
     def inject_globals():
         hourly = None
+        user_name = None
         if getattr(g, "user", None):
             hourly = finance.hourly_value(
                 g.user["monthly_income"], g.user["monthly_hours"]
             )
-        return {"app_name": "FinanceScope", "current_hourly": hourly}
+            user_name = (g.user["name"] or "").split(" ")[0] if g.user["name"] else None
+
+        hour = datetime.now().hour
+        if hour < 12:
+            greeting = "Bom dia"
+        elif hour < 18:
+            greeting = "Boa tarde"
+        else:
+            greeting = "Boa noite"
+
+        return {
+            "app_name": "FinanceScope",
+            "current_hourly": hourly,
+            "user_name": user_name,
+            "greeting": greeting,
+        }
 
     @app.before_request
     def load_user():

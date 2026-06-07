@@ -1,45 +1,66 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - {{ app_name }}{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
-{% block page_subtitle %}Visao geral do seu mes{% endblock %}
 
 {% block content %}
 <div class="grid grid-cards">
   <div class="card kpi">
-    <span class="kpi-label">Receitas</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Receitas do mes</span>
+      <span class="kpi-chip is-up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
+      </span>
+    </div>
     <span class="kpi-value income">R$ 0,00</span>
-    <span class="kpi-hint muted small">no mes</span>
+    <span class="kpi-hint small">total recebido no periodo</span>
   </div>
+
   <div class="card kpi">
-    <span class="kpi-label">Despesas</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Despesas do mes</span>
+      <span class="kpi-chip is-down">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
+      </span>
+    </div>
     <span class="kpi-value expense">R$ 0,00</span>
-    <span class="kpi-hint muted small">no mes</span>
+    <span class="kpi-hint small">total gasto no periodo</span>
   </div>
+
   <div class="card kpi">
-    <span class="kpi-label">Saldo</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Saldo</span>
+      <span class="kpi-chip is-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+      </span>
+    </div>
     <span class="kpi-value">R$ 0,00</span>
-    <span class="kpi-hint muted small">receitas - despesas</span>
+    <span class="kpi-hint small"><code>receitas - despesas</code></span>
   </div>
+
   <div class="card kpi">
-    <span class="kpi-label">Previsao de fechamento</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Previsao de fechamento</span>
+      <span class="kpi-chip is-gold">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </span>
+    </div>
     <span class="kpi-value">R$ 0,00</span>
-    <span class="kpi-hint muted small">media diaria * dias do mes</span>
+    <span class="kpi-hint small">media diaria × dias do mes</span>
   </div>
 </div>
 
 <div class="grid grid-2">
   <div class="card">
     <h3 class="card-title">Gastos por categoria</h3>
-    <div class="chart-placeholder">Em breve (Fase 4)</div>
+    <div class="chart-placeholder">Grafico em breve (Fase 4)</div>
   </div>
   <div class="card">
     <h3 class="card-title">Evolucao mensal</h3>
-    <div class="chart-placeholder">Em breve (Fase 4)</div>
+    <div class="chart-placeholder">Grafico em breve (Fase 4)</div>
   </div>
 </div>
 
 <div class="card">
   <h3 class="card-title">Maiores gastos</h3>
-  <p class="muted">Os rankings aparecem aqui apos cadastrar transacoes.</p>
+  <p class="muted">O ranking dos seus maiores vazamentos aparece aqui na Fase 4.</p>
 </div>
 {% endblock %}

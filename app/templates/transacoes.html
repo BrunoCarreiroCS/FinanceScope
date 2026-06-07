@@ -10,15 +10,30 @@
 {% block content %}
 <div class="grid grid-cards grid-3">
   <div class="card kpi">
-    <span class="kpi-label">Receitas</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Receitas</span>
+      <span class="kpi-chip is-up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
+      </span>
+    </div>
     <span class="kpi-value income">{{ total_income|brl }}</span>
   </div>
   <div class="card kpi">
-    <span class="kpi-label">Despesas</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Despesas</span>
+      <span class="kpi-chip is-down">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
+      </span>
+    </div>
     <span class="kpi-value expense">{{ total_expense|brl }}</span>
   </div>
   <div class="card kpi">
-    <span class="kpi-label">Saldo do periodo</span>
+    <div class="kpi-top">
+      <span class="kpi-label">Saldo do periodo</span>
+      <span class="kpi-chip {{ 'is-up' if balance >= 0 else 'is-down' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+      </span>
+    </div>
     <span class="kpi-value {{ 'income' if balance >= 0 else 'expense' }}">{{ balance|brl }}</span>
   </div>
 </div>
@@ -58,7 +73,10 @@
         </td>
         <td>
           {% if t.category_name %}
-            <span class="dot" style="background: {{ t.category_color }}"></span>{{ t.category_name }}
+            <div class="cat-row">
+              <span class="cat" style="background: {{ t.category_color }}">{{ t.category_name[0]|upper }}</span>
+              {{ t.category_name }}
+            </div>
           {% else %}<span class="muted">—</span>{% endif %}
         </td>
         <td>{{ t.payment_method or '—' }}</td>
