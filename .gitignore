@@ -16,9 +16,10 @@ instance/
 # Testes / cache
 .pytest_cache/
 
-# Editores
+# Editores / ferramentas locais
 .vscode/
 .idea/
+.claude/
 *.swp
 
 # OS
