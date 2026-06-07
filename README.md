@@ -46,7 +46,7 @@ por testes em [`app/tests/test_finance.py`](app/tests/test_finance.py).
 
 - [x] Estrutura base, layout e navegação (Fase 1)
 - [x] RealCost Engine com testes (Fase 5, adiantado)
-- [ ] Perfil financeiro (Fase 2)
+- [x] Perfil financeiro (Fase 2)
 - [ ] CRUD de transações (Fase 3)
 - [ ] Dashboard e gráficos (Fase 4)
 - [ ] Metas e simulador "Posso Comprar?" (Fase 6)

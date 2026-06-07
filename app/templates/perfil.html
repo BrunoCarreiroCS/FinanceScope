@@ -4,34 +4,89 @@
 {% block page_subtitle %}Base de calculo do RealCost Engine{% endblock %}
 
 {% block content %}
-<div class="card form-card">
-  <form method="post" class="form" autocomplete="off">
-    <div class="form-row">
-      <label>Nome
-        <input type="text" name="name" value="{{ g.user.name if g.user else '' }}" required />
-      </label>
+<div class="grid grid-2">
+  <div class="card form-card">
+    <form method="post" class="form" autocomplete="off" id="perfil-form">
+      <div class="form-row">
+        <label>Nome
+          <input type="text" name="name" value="{{ form.name }}" required />
+        </label>
+        {% if errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+      </div>
+
+      <div class="form-grid">
+        <label>Renda mensal (R$)
+          <input type="number" step="0.01" min="0" name="monthly_income"
+                 id="income" value="{{ form.monthly_income }}" />
+          {% if errors.monthly_income %}<span class="field-error">{{ errors.monthly_income }}</span>{% endif %}
+        </label>
+        <label>Horas mensais
+          <input type="number" step="0.5" min="0" name="monthly_hours"
+                 id="hours" value="{{ form.monthly_hours }}" />
+          {% if errors.monthly_hours %}<span class="field-error">{{ errors.monthly_hours }}</span>{% endif %}
+        </label>
+        <label>Limite planejado (R$)
+          <input type="number" step="0.01" min="0" name="monthly_limit"
+                 value="{{ form.monthly_limit }}" />
+          {% if errors.monthly_limit %}<span class="field-error">{{ errors.monthly_limit }}</span>{% endif %}
+        </label>
+      </div>
+
+      <hr class="divider" />
+      <h3 class="card-title">Meta principal <span class="muted small">(opcional)</span></h3>
+      <div class="form-row">
+        <label>Nome da meta
+          <input type="text" name="goal_name" value="{{ form.goal_name }}"
+                 placeholder="Ex.: Reserva de emergencia" />
+        </label>
+        {% if errors.goal_name %}<span class="field-error">{{ errors.goal_name }}</span>{% endif %}
+      </div>
+      <div class="form-grid">
+        <label>Valor alvo (R$)
+          <input type="number" step="0.01" min="0" name="goal_target" value="{{ form.goal_target }}" />
+          {% if errors.goal_target %}<span class="field-error">{{ errors.goal_target }}</span>{% endif %}
+        </label>
+        <label>Aporte mensal (R$)
+          <input type="number" step="0.01" min="0" name="goal_contribution" value="{{ form.goal_contribution }}" />
+          {% if errors.goal_contribution %}<span class="field-error">{{ errors.goal_contribution }}</span>{% endif %}
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Salvar perfil</button>
+      </div>
+      <p class="muted small">
+        Formula da hora: <code>renda_mensal / horas_mensais</code>.
+        Esses valores alimentam todo o RealCost.
+      </p>
+    </form>
+  </div>
+
+  <div class="side-col">
+    <div class="card kpi">
+      <span class="kpi-label">Valor da sua hora</span>
+      <span class="kpi-value accent" id="hourly-value">
+        {% if current_hourly %}R$ {{ '%.2f'|format(current_hourly) }}{% else %}—{% endif %}
+      </span>
+      <span class="kpi-hint muted small" id="hourly-hint">
+        {% if current_hourly %}por hora trabalhada/estudada{% else %}preencha renda e horas{% endif %}
+      </span>
     </div>
-    <div class="form-grid">
-      <label>Renda mensal (R$)
-        <input type="number" step="0.01" min="0" name="monthly_income"
-               value="{{ g.user.monthly_income if g.user else 0 }}" />
-      </label>
-      <label>Horas mensais
-        <input type="number" step="0.5" min="0" name="monthly_hours"
-               value="{{ g.user.monthly_hours if g.user else 0 }}" />
-      </label>
-      <label>Limite planejado (R$)
-        <input type="number" step="0.01" min="0" name="monthly_limit"
-               value="{{ g.user.monthly_limit if g.user else 0 }}" />
-      </label>
+
+    <div class="card">
+      <h3 class="card-title">Por que isso importa</h3>
+      <p class="muted small">
+        Com renda e horas preenchidas, o FinanceScope traduz cada gasto em
+        <strong>tempo de trabalho</strong> e em <strong>% da sua renda</strong>,
+        alimentando o dashboard e o simulador "Posso Comprar?".
+      </p>
+      {% if main_goal %}
+      <p class="muted small">
+        Meta atual: <strong>{{ main_goal.name }}</strong> —
+        alvo R$ {{ '%.2f'|format(main_goal.target_amount) }}.
+      </p>
+      {% endif %}
     </div>
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary" disabled>Salvar (Fase 2)</button>
-    </div>
-    <p class="muted small">
-      Formula da hora: <code>renda_mensal / horas_mensais</code>.
-      Esses valores alimentam todo o RealCost.
-    </p>
-  </form>
+  </div>
 </div>
 {% endblock %}
