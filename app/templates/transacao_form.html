@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% set is_edit = (mode == 'editar') %}
+{% block title %}{{ 'Editar' if is_edit else 'Nova' }} transacao - {{ app_name }}{% endblock %}
+{% block page_title %}{{ 'Editar transacao' if is_edit else 'Nova transacao' }}{% endblock %}
+{% block page_subtitle %}{{ 'Atualize os dados' if is_edit else 'Registre uma receita ou despesa' }}{% endblock %}
+
+{% block content %}
+<div class="card form-card narrow">
+  <form method="post"
+        action="{{ url_for('transacao_editar', tx_id=tx_id) if is_edit else url_for('transacao_nova') }}"
+        class="form" autocomplete="off">
+
+    <div class="seg" role="group">
+      <label class="seg-item">
+        <input type="radio" name="type" value="expense"
+               {{ 'checked' if form.type != 'income' }} />
+        <span>Despesa</span>
+      </label>
+      <label class="seg-item">
+        <input type="radio" name="type" value="income"
+               {{ 'checked' if form.type == 'income' }} />
+        <span>Receita</span>
+      </label>
+    </div>
+    {% if errors.type %}<span class="field-error">{{ errors.type }}</span>{% endif %}
+
+    <div class="form-row">
+      <label>Descricao
+        <input type="text" name="description" value="{{ form.description or '' }}"
+               placeholder="Ex.: Mercado, Salario..." required />
+      </label>
+      {% if errors.description %}<span class="field-error">{{ errors.description }}</span>{% endif %}
+    </div>
+
+    <div class="form-grid">
+      <label>Valor (R$)
+        <input type="number" step="0.01" min="0" name="amount" value="{{ form.amount or '' }}" />
+        {% if errors.amount %}<span class="field-error">{{ errors.amount }}</span>{% endif %}
+      </label>
+      <label>Data
+        <input type="date" name="date" value="{{ form.date or '' }}" />
+        {% if errors.date %}<span class="field-error">{{ errors.date }}</span>{% endif %}
+      </label>
+      <label>Categoria
+        <select name="category_id">
+          <option value="">Sem categoria</option>
+          {% for c in categories %}
+            <option value="{{ c.id }}" data-type="{{ c.type }}"
+              {{ 'selected' if form.category_id == c.id }}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-grid">
+      <label>Forma de pagamento
+        <input type="text" name="payment_method" value="{{ form.payment_method or '' }}"
+               placeholder="Ex.: Pix, Cartao, Dinheiro" />
+      </label>
+      <label class="check">
+        <input type="checkbox" name="is_recurring" value="1"
+               {{ 'checked' if form.is_recurring }} />
+        <span>Despesa/receita recorrente</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" class="btn btn-primary">{{ 'Salvar alteracoes' if is_edit else 'Adicionar' }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

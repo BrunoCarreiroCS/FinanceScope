@@ -1,6 +1,7 @@
 """Helpers de parsing e validacao de formularios."""
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional, Tuple
 
 
@@ -21,6 +22,17 @@ def parse_decimal(raw: Optional[str]) -> Tuple[Optional[float], Optional[str]]:
     if value < 0:
         return None, "O valor nao pode ser negativo."
     return value, None
+
+
+def parse_date(raw: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
+    """Valida data no formato YYYY-MM-DD (input HTML). Retorna (iso_str, erro)."""
+    if not raw or not raw.strip():
+        return None, "Informe a data."
+    try:
+        datetime.strptime(raw.strip(), "%Y-%m-%d")
+    except ValueError:
+        return None, "Data invalida."
+    return raw.strip(), None
 
 
 def _looks_br(raw: str) -> bool:

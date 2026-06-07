@@ -4,9 +4,11 @@ Sem login: usamos um usuario fixo (id=1) criado pelo schema.sql.
 """
 from flask import Flask, render_template, redirect, url_for, request, flash, g
 
+from datetime import date
+
 import database
 from utils import finance
-from utils.forms import parse_decimal
+from utils.forms import parse_decimal, parse_date
 
 DEFAULT_USER_ID = 1
 
@@ -19,10 +21,44 @@ def get_main_goal(db, user_id):
     ).fetchone()
 
 
+def get_categories(db, type_=None):
+    """Lista categorias, opcionalmente filtradas por tipo (income/expense)."""
+    if type_ in ("income", "expense"):
+        return db.execute(
+            "SELECT * FROM categories WHERE type = ? ORDER BY name", (type_,)
+        ).fetchall()
+    return db.execute("SELECT * FROM categories ORDER BY type, name").fetchall()
+
+
+def brl(value):
+    """Formata numero como moeda brasileira: 1234.5 -> 'R$ 1.234,50'."""
+    try:
+        s = f"{float(value):,.2f}"
+    except (TypeError, ValueError):
+        return "R$ 0,00"
+    s = s.replace(",", "X").replace(".", ",").replace("X", ".")
+    return f"R$ {s}"
+
+
+def date_br(value):
+    """date/str ISO -> 'dd/mm/aaaa'."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        try:
+            value = date.fromisoformat(value)
+        except ValueError:
+            return value
+    return value.strftime("%d/%m/%Y")
+
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "dev-financescope"  # trocar em producao
     database.init_app(app)
+
+    app.jinja_env.filters["brl"] = brl
+    app.jinja_env.filters["date_br"] = date_br
 
     @app.context_processor
     def inject_globals():
@@ -148,7 +184,150 @@ def create_app():
 
     @app.route("/transacoes")
     def transacoes():
-        return render_template("transacoes.html", active="transacoes")
+        db = database.get_db()
+        # Filtros (querystring). Mes default = mes atual.
+        f_month = request.args.get("month") or date.today().strftime("%Y-%m")
+        f_type = request.args.get("type") or ""
+        f_category = request.args.get("category_id") or ""
+
+        sql = """SELECT t.*, c.name AS category_name, c.color AS category_color
+                 FROM transactions t
+                 LEFT JOIN categories c ON c.id = t.category_id
+                 WHERE t.user_id = ?"""
+        params = [DEFAULT_USER_ID]
+        if f_month:
+            sql += " AND strftime('%Y-%m', t.date) = ?"
+            params.append(f_month)
+        if f_type in ("income", "expense"):
+            sql += " AND t.type = ?"
+            params.append(f_type)
+        if f_category:
+            sql += " AND t.category_id = ?"
+            params.append(f_category)
+        sql += " ORDER BY t.date DESC, t.id DESC"
+        rows = db.execute(sql, params).fetchall()
+
+        total_income = sum(r["amount"] for r in rows if r["type"] == "income")
+        total_expense = sum(r["amount"] for r in rows if r["type"] == "expense")
+
+        return render_template(
+            "transacoes.html", active="transacoes",
+            rows=rows, categories=get_categories(db),
+            filters={"month": f_month, "type": f_type, "category_id": f_category},
+            total_income=total_income, total_expense=total_expense,
+            balance=total_income - total_expense,
+        )
+
+    def _validate_transaction(form):
+        """Valida o dicionario do form. Retorna (dados, errors)."""
+        errors = {}
+        data = {}
+        data["type"] = form.get("type")
+        if data["type"] not in ("income", "expense"):
+            errors["type"] = "Selecione receita ou despesa."
+        data["description"] = (form.get("description") or "").strip()
+        if not data["description"]:
+            errors["description"] = "Informe uma descricao."
+
+        amount, e = parse_decimal(form.get("amount"))
+        if e:
+            errors["amount"] = e
+        elif not amount or amount <= 0:
+            errors["amount"] = "O valor deve ser maior que zero."
+        data["amount"] = amount
+
+        d, e = parse_date(form.get("date"))
+        if e:
+            errors["date"] = e
+        data["date"] = d
+
+        cat = form.get("category_id") or None
+        data["category_id"] = int(cat) if cat else None
+        data["payment_method"] = (form.get("payment_method") or "").strip() or None
+        data["is_recurring"] = 1 if form.get("is_recurring") else 0
+        return data, errors
+
+    @app.route("/transacoes/nova", methods=["GET", "POST"])
+    def transacao_nova():
+        db = database.get_db()
+        if request.method == "POST":
+            data, errors = _validate_transaction(request.form)
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "transacao_form.html", active="transacoes",
+                    categories=get_categories(db), form=request.form,
+                    errors=errors, mode="nova",
+                ), 400
+            db.execute(
+                """INSERT INTO transactions
+                   (user_id, type, description, category_id, amount, date,
+                    payment_method, is_recurring)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (DEFAULT_USER_ID, data["type"], data["description"],
+                 data["category_id"], data["amount"], data["date"],
+                 data["payment_method"], data["is_recurring"]),
+            )
+            db.commit()
+            flash("Transacao adicionada.", "success")
+            return redirect(url_for("transacoes"))
+
+        form = {"type": "expense", "date": date.today().strftime("%Y-%m-%d")}
+        return render_template(
+            "transacao_form.html", active="transacoes",
+            categories=get_categories(db), form=form, errors={}, mode="nova",
+        )
+
+    @app.route("/transacoes/<int:tx_id>/editar", methods=["GET", "POST"])
+    def transacao_editar(tx_id):
+        db = database.get_db()
+        tx = db.execute(
+            "SELECT * FROM transactions WHERE id = ? AND user_id = ?",
+            (tx_id, DEFAULT_USER_ID),
+        ).fetchone()
+        if tx is None:
+            flash("Transacao nao encontrada.", "error")
+            return redirect(url_for("transacoes"))
+
+        if request.method == "POST":
+            data, errors = _validate_transaction(request.form)
+            if errors:
+                flash("Verifique os campos destacados.", "error")
+                return render_template(
+                    "transacao_form.html", active="transacoes",
+                    categories=get_categories(db), form=request.form,
+                    errors=errors, mode="editar", tx_id=tx_id,
+                ), 400
+            db.execute(
+                """UPDATE transactions
+                   SET type = ?, description = ?, category_id = ?, amount = ?,
+                       date = ?, payment_method = ?, is_recurring = ?,
+                       updated_at = CURRENT_TIMESTAMP
+                   WHERE id = ? AND user_id = ?""",
+                (data["type"], data["description"], data["category_id"],
+                 data["amount"], data["date"], data["payment_method"],
+                 data["is_recurring"], tx_id, DEFAULT_USER_ID),
+            )
+            db.commit()
+            flash("Transacao atualizada.", "success")
+            return redirect(url_for("transacoes"))
+
+        return render_template(
+            "transacao_form.html", active="transacoes",
+            categories=get_categories(db), form=tx, errors={},
+            mode="editar", tx_id=tx_id,
+        )
+
+    @app.route("/transacoes/<int:tx_id>/excluir", methods=["POST"])
+    def transacao_excluir(tx_id):
+        db = database.get_db()
+        db.execute(
+            "DELETE FROM transactions WHERE id = ? AND user_id = ?",
+            (tx_id, DEFAULT_USER_ID),
+        )
+        db.commit()
+        flash("Transacao excluida.", "success")
+        return redirect(url_for("transacoes"))
 
     @app.route("/metas")
     def metas():

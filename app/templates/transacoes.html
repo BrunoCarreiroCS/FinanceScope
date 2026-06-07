@@ -1,28 +1,81 @@
 {% extends "base.html" %}
 {% block title %}Transacoes - {{ app_name }}{% endblock %}
 {% block page_title %}Transacoes{% endblock %}
-{% block page_subtitle %}Receitas e despesas do mes{% endblock %}
+{% block page_subtitle %}Receitas e despesas do periodo{% endblock %}
 
 {% block topbar_actions %}
-  <button class="btn btn-primary" disabled>+ Nova transacao (Fase 3)</button>
+  <a href="{{ url_for('transacao_nova') }}" class="btn btn-primary">+ Nova transacao</a>
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="toolbar">
-    <input type="search" placeholder="Buscar descricao..." disabled />
-    <select disabled><option>Todas as categorias</option></select>
-    <select disabled><option>Receitas e despesas</option></select>
+<div class="grid grid-cards grid-3">
+  <div class="card kpi">
+    <span class="kpi-label">Receitas</span>
+    <span class="kpi-value income">{{ total_income|brl }}</span>
   </div>
+  <div class="card kpi">
+    <span class="kpi-label">Despesas</span>
+    <span class="kpi-value expense">{{ total_expense|brl }}</span>
+  </div>
+  <div class="card kpi">
+    <span class="kpi-label">Saldo do periodo</span>
+    <span class="kpi-value {{ 'income' if balance >= 0 else 'expense' }}">{{ balance|brl }}</span>
+  </div>
+</div>
+
+<div class="card">
+  <form class="toolbar" method="get">
+    <input type="month" name="month" value="{{ filters.month }}" />
+    <select name="type">
+      <option value="">Receitas e despesas</option>
+      <option value="income"  {{ 'selected' if filters.type == 'income'  }}>Apenas receitas</option>
+      <option value="expense" {{ 'selected' if filters.type == 'expense' }}>Apenas despesas</option>
+    </select>
+    <select name="category_id">
+      <option value="">Todas as categorias</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {{ 'selected' if filters.category_id == c.id|string }}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn">Filtrar</button>
+    <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Limpar</a>
+  </form>
+
   <table class="table">
     <thead>
       <tr>
         <th>Data</th><th>Descricao</th><th>Categoria</th>
-        <th>Pagamento</th><th class="num">Valor</th><th></th>
+        <th>Pagamento</th><th class="num">Valor</th><th class="num">Acoes</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td colspan="6" class="muted center">Nenhuma transacao ainda.</td></tr>
+      {% for t in rows %}
+      <tr>
+        <td>{{ t.date|date_br }}</td>
+        <td>
+          {{ t.description }}
+          {% if t.is_recurring %}<span class="tag">recorrente</span>{% endif %}
+        </td>
+        <td>
+          {% if t.category_name %}
+            <span class="dot" style="background: {{ t.category_color }}"></span>{{ t.category_name }}
+          {% else %}<span class="muted">—</span>{% endif %}
+        </td>
+        <td>{{ t.payment_method or '—' }}</td>
+        <td class="num {{ 'income' if t.type == 'income' else 'expense' }}">
+          {{ '+' if t.type == 'income' else '-' }} {{ t.amount|brl }}
+        </td>
+        <td class="num actions">
+          <a href="{{ url_for('transacao_editar', tx_id=t.id) }}" class="btn btn-sm">Editar</a>
+          <form method="post" action="{{ url_for('transacao_excluir', tx_id=t.id) }}"
+                onsubmit="return confirm('Excluir esta transacao?');" style="display:inline">
+            <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted center">Nenhuma transacao neste filtro.</td></tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
