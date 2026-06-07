@@ -10,6 +10,7 @@
   <form method="post"
         action="{{ url_for('meta_editar', goal_id=goal_id) if is_edit else url_for('meta_nova') }}"
         class="form" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     <div class="form-row">
       <label>Nome da meta

@@ -10,6 +10,7 @@
   <form method="post"
         action="{{ url_for('transacao_editar', tx_id=tx_id) if is_edit else url_for('transacao_nova') }}"
         class="form" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
     <div class="seg" role="group">
       <label class="seg-item">

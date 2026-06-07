@@ -16,7 +16,9 @@ import database  # noqa: E402
 def app():
     fd, path = tempfile.mkstemp(suffix=".sqlite")
     os.close(fd)
-    application = app_module.create_app({"TESTING": True, "DATABASE": path})
+    application = app_module.create_app(
+        {"TESTING": True, "DATABASE": path, "CSRF_ENABLED": False}
+    )
     with application.app_context():
         database.init_db()
     yield application

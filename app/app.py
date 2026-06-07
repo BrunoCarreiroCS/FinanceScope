@@ -4,16 +4,18 @@ Autenticacao por sessao: cada usuario ve e edita apenas os proprios dados.
 """
 import json
 import os
+import secrets
 from dataclasses import asdict
 from datetime import date, datetime
 
 from flask import (Flask, render_template, redirect, url_for, request,
-                   flash, session, g)
+                   flash, session, g, abort)
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import database
 import seeds
 from utils import finance, reports
+from utils.csv_import import parse_csv
 from utils.forms import parse_decimal, parse_date
 
 
@@ -71,8 +73,14 @@ def create_app(test_config=None):
     # para nao quebrar o login em http://localhost no desenvolvimento.
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_SECURE"] = bool(os.environ.get("SESSION_COOKIE_SECURE"))
+    app.config["CSRF_ENABLED"] = True
     if test_config:
         app.config.update(test_config)
+
+    def csrf_token():
+        if "_csrf" not in session:
+            session["_csrf"] = secrets.token_hex(16)
+        return session["_csrf"]
     database.init_app(app)
     seeds.register(app)
 
@@ -102,6 +110,7 @@ def create_app(test_config=None):
             "current_hourly": hourly,
             "user_name": user_name,
             "greeting": greeting,
+            "csrf_token": csrf_token,
         }
 
     @app.before_request
@@ -116,6 +125,16 @@ def create_app(test_config=None):
                 ).fetchone()
             except Exception:
                 g.user = None
+
+    @app.before_request
+    def csrf_protect():
+        if not app.config.get("CSRF_ENABLED", True):
+            return
+        if request.method == "POST":
+            sent = request.form.get("csrf_token")
+            real = session.get("_csrf")
+            if not real or not sent or not secrets.compare_digest(sent, real):
+                abort(400)
 
     PUBLIC_ENDPOINTS = {"home", "login", "registro", "static"}
 

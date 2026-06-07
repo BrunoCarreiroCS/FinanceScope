@@ -29,6 +29,7 @@
     {% endwith %}
 
     <form method="post" class="form" autocomplete="on">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <label>E-mail
         <input type="email" name="email" value="{{ form.email or '' }}" required autofocus />
       </label>

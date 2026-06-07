@@ -8,6 +8,7 @@
 <div class="grid grid-2">
   <div class="card form-card">
     <form method="post" class="form" autocomplete="off" id="perfil-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="form-row">
         <label>Nome
           <input type="text" name="name" value="{{ form.name }}" required />

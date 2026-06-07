@@ -9,6 +9,7 @@
   <!-- Formulario -->
   <div class="card form-card">
     <form method="post" class="form" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <div class="form-row">
         <label>Item
           <input type="text" name="item_name" value="{{ form.item_name or '' }}"

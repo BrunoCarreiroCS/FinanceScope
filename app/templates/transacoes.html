@@ -4,6 +4,7 @@
 {% block page_subtitle %}Receitas e despesas do período{% endblock %}
 
 {% block topbar_actions %}
+  <a href="{{ url_for('transacao_importar') }}" class="btn">Importar CSV</a>
   <a href="{{ url_for('transacao_nova') }}" class="btn btn-primary">+ Nova transação</a>
 {% endblock %}
 
@@ -87,6 +88,7 @@
           <a href="{{ url_for('transacao_editar', tx_id=t.id) }}" class="btn btn-sm">Editar</a>
           <form method="post" action="{{ url_for('transacao_excluir', tx_id=t.id) }}"
                 onsubmit="return confirm('Excluir esta transação?');" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
           </form>
         </td>
