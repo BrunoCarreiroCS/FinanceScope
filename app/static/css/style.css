@@ -464,6 +464,7 @@ body.auth {
   padding: 10px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);
   background: var(--surface-2); color: var(--text); font: inherit; font-weight: 600;
   cursor: pointer; transition: background .15s, transform .05s, border-color .15s, filter .15s;
+  white-space: nowrap; /* "Criar conta →" nunca quebra em 2 linhas em containers apertados */
 }
 .btn:hover:not(:disabled) { background: var(--surface-3); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
@@ -721,10 +722,24 @@ body.auth {
   /* Hero da home */
   .hero { padding: 28px 18px 36px; gap: 28px; }
   .hero-title { font-size: 36px; }
-  .home-nav { padding: 18px; }
+
+  /* Home-nav: precisa caber brand + botões em 375px.
+     - padding lateral menor, logo menor, brand-name menor
+     - botões com white-space: nowrap pra não quebrar palavra-a-palavra
+     - flex-shrink:0 nos botões pra não serem comprimidos
+     - brand pode encolher (min-width:0 + truncate) se faltar espaço */
+  .home-nav { padding: 14px 16px; gap: 10px; }
+  .home-nav .brand { min-width: 0; flex-shrink: 1; }
+  .home-nav .brand-logo { width: 32px; height: 32px; }
+  .home-nav .brand-name { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .home-nav .brand-tag { display: none; }
-  .home-nav-links { gap: 8px; }
-  .home-nav-links .btn { padding: 8px 12px; font-size: 13px; }
+  .home-nav-links { gap: 8px; flex-shrink: 0; }
+  .home-nav-links .btn {
+    padding: 9px 13px;
+    font-size: 13px;
+    white-space: nowrap;     /* NUNCA quebra "Criar conta" palavra a palavra */
+    flex-shrink: 0;
+  }
   .rc-card { transform: none; }
 
   /* Trust strip / features no rodapé da home em coluna */
