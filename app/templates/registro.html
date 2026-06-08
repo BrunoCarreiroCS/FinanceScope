@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,800&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body class="auth">
@@ -26,23 +26,35 @@
       {% endfor %}
     {% endwith %}
 
-    <form method="post" class="form" autocomplete="on">
+    <form method="post" class="form" autocomplete="on" novalidate>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <label>Nome
-        <input type="text" name="name" value="{{ form.name or '' }}" required autofocus />
-        {% if errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+        <input type="text" name="name" value="{{ form.name or '' }}" required autofocus
+               autocomplete="name"
+               aria-invalid="{{ 'true' if errors.name else 'false' }}"
+               {% if errors.name %}aria-describedby="err-name"{% endif %} />
+        {% if errors.name %}<span id="err-name" class="field-error" role="alert">{{ errors.name }}</span>{% endif %}
       </label>
       <label>E-mail
-        <input type="email" name="email" value="{{ form.email or '' }}" required />
-        {% if errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+        <input type="email" name="email" value="{{ form.email or '' }}" required
+               autocomplete="email"
+               aria-invalid="{{ 'true' if errors.email else 'false' }}"
+               {% if errors.email %}aria-describedby="err-email"{% endif %} />
+        {% if errors.email %}<span id="err-email" class="field-error" role="alert">{{ errors.email }}</span>{% endif %}
       </label>
       <label>Senha
-        <input type="password" name="password" required />
-        {% if errors.password %}<span class="field-error">{{ errors.password }}</span>{% endif %}
+        <input type="password" name="password" required
+               autocomplete="new-password"
+               aria-invalid="{{ 'true' if errors.password else 'false' }}"
+               {% if errors.password %}aria-describedby="err-password"{% endif %} />
+        {% if errors.password %}<span id="err-password" class="field-error" role="alert">{{ errors.password }}</span>{% endif %}
       </label>
       <label>Confirmar senha
-        <input type="password" name="confirm" required />
-        {% if errors.confirm %}<span class="field-error">{{ errors.confirm }}</span>{% endif %}
+        <input type="password" name="confirm" required
+               autocomplete="new-password"
+               aria-invalid="{{ 'true' if errors.confirm else 'false' }}"
+               {% if errors.confirm %}aria-describedby="err-confirm"{% endif %} />
+        {% if errors.confirm %}<span id="err-confirm" class="field-error" role="alert">{{ errors.confirm }}</span>{% endif %}
       </label>
       <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Criar conta</button>
     </form>

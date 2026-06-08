@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,800&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body class="home">
@@ -125,13 +125,25 @@
 
   <!-- Strip de confianca -->
   <section class="trust">
-    <span class="trust-item">🔒 Sem login · dados locais</span>
+    <span class="trust-item">
+      <svg class="trust-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Senha criptografada · dados isolados por usuário
+    </span>
     <span class="trust-sep"></span>
-    <span class="trust-item">📊 Dashboard de decisão</span>
+    <span class="trust-item">
+      <svg class="trust-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      Dashboard de decisão
+    </span>
     <span class="trust-sep"></span>
-    <span class="trust-item">⏱️ Custo real em horas</span>
+    <span class="trust-item">
+      <svg class="trust-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Custo real em horas
+    </span>
     <span class="trust-sep"></span>
-    <span class="trust-item">🎯 Metas e simulador</span>
+    <span class="trust-item">
+      <svg class="trust-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+      Metas e simulador
+    </span>
   </section>
 
   <footer class="home-foot">

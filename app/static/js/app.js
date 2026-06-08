@@ -94,7 +94,7 @@ function initDashboardCharts() {
   }
 
   Chart.defaults.color = CORES.texto;
-  Chart.defaults.font.family = "Inter, sans-serif";
+  Chart.defaults.font.family = "Geist, Inter, system-ui, sans-serif";
 
   // Donut: gastos por categoria.
   const catEl = document.getElementById("catChart");

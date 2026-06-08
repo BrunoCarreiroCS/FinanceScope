@@ -4,7 +4,7 @@
    ========================================================================= */
 
 :root {
-  /* superficies (Binance-like) */
+  /* superficies */
   --bg:          #0a0e13;
   --bg-2:        #0e141b;
   --surface:     #151b24;
@@ -18,53 +18,118 @@
   --text-2:      #b6c0cd;
   --text-muted:  #7e8a99;
 
-  /* acentos */
-  --accent:      #16c784;   /* verde "alta" (Binance/Organizze) */
-  --accent-2:    #0ecb81;
-  --accent-dim:  #0fa86c;
-  --accent-soft: rgba(22, 199, 132, 0.12);
+  /* MARCA (jade refinado) — identidade visual, links, botões, highlights */
+  --accent:      #3dd68c;
+  --accent-2:    #2bc97f;
+  --accent-dim:  #1faf6a;
+  --accent-soft: rgba(61, 214, 140, 0.13);
+
+  /* DADOS FINANCEIROS — sobe/desce. Separados da cor da marca, como em
+     produtos sérios (BBG, banking). Mantêm semântica universal. */
   --up:          #16c784;
-  --down:        #f6465d;   /* vermelho "baixa" (Binance) */
+  --up-soft:     rgba(22, 199, 132, 0.12);
+  --down:        #f6465d;
   --down-soft:   rgba(246, 70, 93, 0.12);
-  --gold:        #f0b90b;   /* destaque/aviso (Binance) */
+
+  /* alerta/destaque */
+  --gold:        #f0b90b;
   --gold-soft:   rgba(240, 185, 11, 0.12);
   --info:        #3b82f6;
 
   --radius:      16px;
   --radius-sm:   11px;
+  --radius-lg:   22px;
   --radius-pill: 999px;
   --shadow:      0 8px 30px rgba(0, 0, 0, 0.40);
   --shadow-sm:   0 2px 10px rgba(0, 0, 0, 0.25);
-  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --shadow-hero: 0 30px 80px -20px rgba(61, 214, 140, 0.18),
+                 0 18px 50px -10px rgba(0, 0, 0, 0.55);
+
+  /* TIPOGRAFIA — par editorial premium
+     display: Fraunces (serif moderna, com personalidade óptica)
+     body:    Geist (sans neogrotesque, clínica e legível)
+     mono:    JetBrains Mono (números financeiros tabulares)        */
+  --font-display: "Fraunces", "DM Serif Display", Georgia, serif;
+  --font-body:    "Geist", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  /* alias retrocompat (alguns lugares antigos referenciam --font) */
+  --font: var(--font-body);
+
+  /* easing reutilizável */
+  --ease-out-soft: cubic-bezier(.2, .7, .2, 1);
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
-  font-family: var(--font);
+  font-family: var(--font-body);
   color: var(--text);
-  /* Fundo em 3 camadas (do topo p/ baixo):
-     1) Tile 256x256 com a logo branca pequena (decoração da marca)
-     2) Grid 32x32 sutil (estilo Binache/SaaS)
-     3) Cor de fundo escura lisa
+  /* Fundo em camadas (do topo p/ baixo):
+     1) Dois radial gradients (mesh atmosférico jade + dourado)
+     2) Tile 256x256 com a logo branca pequena (decoração de marca, sutil)
+     3) Grid 32x32 muito leve (estilo SaaS sério)
+     4) Cor escura lisa
      background-attachment: fixed -> não distorce ao redimensionar */
   background-color: var(--bg);
   background-image:
+    radial-gradient(ellipse 80% 50% at 20% 0%,   rgba(61, 214, 140, 0.07), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 100%, rgba(240, 185, 11, 0.045), transparent 55%),
     url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 256px 256px, 32px 32px, 32px 32px;
+  background-size:
+    100% 100%, 100% 100%,
+    256px 256px,
+    32px 32px, 32px 32px;
   background-attachment: fixed;
-  /* Opacidade do pattern controlada via filter no body — assim só ele fica
-     translucido sem afetar o conteúdo. Usa-se contraste/brilho do CSS */
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11"; /* Fraunces: ativa stylistic sets */
+  position: relative;
 }
+
+/* Camada de grão SVG: dá textura "filme" sobre o dark.
+   Pointer-events none para não bloquear cliques. */
+body::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23n)' opacity='.55'/></svg>");
+  opacity: .22;
+  mix-blend-mode: overlay;
+}
+.layout, .auth-card, .hero, .home-nav, .features, .trust, .home-foot { position: relative; z-index: 1; }
+
 a { color: inherit; text-decoration: none; }
-h1, h2, h3 { margin: 0; }
+
+/* Hierarquia tipográfica — display serif nos títulos.
+   Fraunces shines em pesos altos com optical sizing. */
+h1, h2, h3,
+.hero-title, .greet-name, .page-title, .auth-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Números financeiros em mono — vira ASSINATURA visual da marca.
+   IMPORTANTE: só elementos que renderizam VALORES NUMÉRICOS.
+   NUNCA aplicar em texto livre (nomes, títulos, descrições). */
+.kpi-value,
+.num, .table td.num,
+.legend-val,
+.goal-amounts .accent,
+.rc-row strong {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "zero";
+  letter-spacing: -0.02em;
+}
+
 code {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   color: var(--accent); background: var(--accent-soft);
   padding: 1px 6px; border-radius: 6px; font-size: 0.92em;
 }
@@ -92,14 +157,14 @@ a.brand:hover { background: var(--surface); }
   width: 38px; height: 38px; border-radius: 11px;
   display: grid; place-items: center; color: #04140c;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 6px 18px rgba(22,199,132,0.40);
+  box-shadow: 0 6px 18px rgba(61, 214, 140, 0.40);
 }
 
 /* Logo da marca (PNG do cofrinho): mesmo "slot" do .brand-mark */
 .brand-logo {
   width: 42px; height: 42px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(22, 199, 132, 0.35));
+  filter: drop-shadow(0 4px 12px rgba(61, 214, 140, 0.35));
   flex-shrink: 0;
 }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
@@ -150,11 +215,22 @@ a.brand:hover { background: var(--surface); }
   gap: 24px; margin-bottom: 26px;
 }
 .greet-hi   { margin: 0; color: var(--text-muted); font-size: 14px; }
-.greet-name { margin: 2px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -0.3px; }
-.page-title    { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+.greet-name {
+  margin: 2px 0 0;
+  font-size: clamp(20px, 2.2vw + 10px, 28px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  /* Em Fraunces (display), nomes longos podem quebrar a linha;
+     limita a uma linha e mostra reticências se passar. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.page-title    { font-size: clamp(18px, 1.6vw + 10px, 24px); font-weight: 700; letter-spacing: -0.02em; }
 .page-subtitle { margin: 4px 0 0; color: var(--text-muted); }
+.topbar-greet  { flex: 1; min-width: 0; overflow: hidden; }
 
-.topbar-greet   { flex: 1; min-width: 0; }
 .topbar-actions { display: flex; align-items: center; gap: 14px; }
 .topbar-user    { display: flex; align-items: center; }
 .avatar {
@@ -205,12 +281,13 @@ body.auth {
   min-height: 100vh; display: grid; place-items: center; padding: 32px 20px;
   background-color: var(--bg);
   background-image:
-    radial-gradient(circle at 50% 0%, rgba(22, 199, 132, 0.12), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(61, 214, 140, 0.14), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(240, 185, 11, 0.05), transparent 60%),
     url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 100vh, 256px 256px, 32px 32px, 32px 32px;
-  background-repeat: no-repeat, repeat, repeat, repeat;
+  background-size: 100% 100vh, 100% 100vh, 256px 256px, 32px 32px, 32px 32px;
+  background-repeat: no-repeat, no-repeat, repeat, repeat, repeat;
   background-attachment: fixed;
 }
 .auth-card {
@@ -263,7 +340,7 @@ body.auth {
   background: var(--accent-soft); color: var(--accent);
 }
 .kpi-chip svg { width: 18px; height: 18px; }
-.kpi-chip.is-up   { background: var(--accent-soft); color: var(--up); }
+.kpi-chip.is-up   { background: var(--up-soft); color: var(--up); }
 .kpi-chip.is-down { background: var(--down-soft); color: var(--down); }
 .kpi-chip.is-gold { background: var(--gold-soft); color: var(--gold); }
 .kpi-chip.is-info { background: rgba(59,130,246,0.12); color: var(--info); }
@@ -375,7 +452,7 @@ body.auth {
 .seg-item span { display: block; padding: 9px 22px; border-radius: 8px; color: var(--text-muted); font-size: 13px; transition: .15s; }
 .seg-item input:checked + span { background: var(--surface-3); color: var(--text); font-weight: 600; }
 .seg-item:first-child input:checked + span { background: var(--down-soft); color: var(--down); }
-.seg-item:last-child  input:checked + span { background: var(--accent-soft); color: var(--accent); }
+.seg-item:last-child  input:checked + span { background: var(--up-soft); color: var(--up); }
 
 .check { flex-direction: row !important; align-items: center; gap: 9px; color: var(--text-2); }
 .check input { width: auto; }
@@ -395,7 +472,7 @@ body.auth {
 .btn-primary {
   background: linear-gradient(180deg, var(--accent), var(--accent-dim));
   border-color: transparent; color: #04140c;
-  box-shadow: 0 6px 18px rgba(22,199,132,0.35);
+  box-shadow: 0 6px 18px rgba(61, 214, 140, 0.35);
 }
 .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
 .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-muted); }
@@ -430,7 +507,7 @@ body.auth {
 
 .risk { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; }
 .risk::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.risk-baixo { background: var(--accent-soft); color: var(--up); }
+.risk-baixo { background: var(--up-soft); color: var(--up); }
 .risk-medio { background: var(--gold-soft); color: var(--gold); }
 .risk-alto  { background: var(--down-soft); color: var(--down); }
 
@@ -449,7 +526,7 @@ body.auth {
 }
 .verdict-label { font-size: 16px; }
 .verdict p { margin: 2px 0 0; font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
-.verdict-baixo { background: var(--accent-soft); border-color: rgba(22,199,132,0.3); }
+.verdict-baixo { background: var(--up-soft); border-color: rgba(22, 199, 132, 0.3); }
 .verdict-baixo .verdict-badge { background: var(--up); color: #04140c; }
 .verdict-baixo .verdict-label { color: var(--up); }
 .verdict-medio { background: var(--gold-soft); border-color: rgba(240,185,11,0.3); }
@@ -472,11 +549,11 @@ body.auth {
 .flash-area { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 .flash { padding: 13px 16px; border-radius: var(--radius-sm); font-size: 13px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .flash::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
-.flash-success { background: var(--accent-soft); color: #51d6a0; border-color: rgba(22,199,132,0.3); }
+.flash-success { background: var(--up-soft); color: #51d6a0; border-color: rgba(22, 199, 132, 0.3); }
 .flash-error   { background: var(--down-soft); color: #fb7185; border-color: rgba(246,70,93,0.3); }
 
 /* empty state "bem-vindo" do dashboard */
-.welcome { border-color: rgba(22,199,132,0.25); }
+.welcome { border-color: rgba(61, 214, 140, 0.28); }
 .welcome-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .welcome-emoji {
   width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
@@ -680,16 +757,22 @@ body.auth {
    ========================================================================= */
 
 body.home {
-  /* Glow verde + pattern de logos + grid + tom escuro liso. Tudo fixo no
-     viewport para não distorcer ao redimensionar. */
+  /* Mesh atmosférico jade (cima) + dourado (canto inferior) + pattern de
+     logos sutil + grid + tom escuro. Tudo fixo no viewport pra não
+     distorcer ao redimensionar. */
   background-color: var(--bg);
   background-image:
-    radial-gradient(circle at 50% 0%, rgba(22, 199, 132, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 55% at 50% 0%,   rgba(61, 214, 140, 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 90%,  rgba(240, 185, 11, 0.07), transparent 55%),
+    radial-gradient(ellipse 50% 30% at 10% 80%,  rgba(59, 130, 246, 0.05), transparent 55%),
     url("../img/logo-pattern.png"),
     linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 100% 100vh, 256px 256px, 32px 32px, 32px 32px;
-  background-repeat: no-repeat, repeat, repeat, repeat;
+  background-size:
+    100% 100vh, 100% 100vh, 100% 100vh,
+    256px 256px,
+    32px 32px, 32px 32px;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat;
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
@@ -762,7 +845,7 @@ body.home {
 .rc-row .down { color: var(--down); }
 .rc-msg {
   margin: 6px 0 0; padding: 13px 15px; border-radius: var(--radius-sm);
-  background: var(--accent-soft); border: 1px solid rgba(22,199,132,0.22);
+  background: var(--accent-soft); border: 1px solid rgba(61, 214, 140, 0.25);
   font-size: 13px; color: var(--text-2); line-height: 1.55;
 }
 .rc-msg strong { color: var(--accent); }
@@ -784,11 +867,13 @@ body.home {
 
 /* strip de confianca */
 .trust {
-  max-width: 1180px; margin: 0 auto; padding: 18px 32px;
-  display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap;
+  max-width: 1180px; margin: 0 auto; padding: 20px 32px;
+  display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;
   border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft);
   color: var(--text-2); font-size: 13px;
 }
+.trust-item { display: inline-flex; align-items: center; gap: 8px; }
+.trust-ico { width: 16px; height: 16px; color: var(--accent); opacity: .9; flex: none; }
 .trust-sep { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
 @media (max-width: 700px) { .trust-sep { display: none; } }
 
@@ -799,3 +884,149 @@ body.home {
 .home-foot .foot-brand { margin: 0 0 4px; font-size: 16px; font-weight: 500; color: var(--text-2); }
 .home-foot .foot-brand strong { color: var(--text); font-weight: 800; }
 .home-foot p.muted { max-width: 480px; }
+
+/* =========================================================================
+   HIERARQUIA DE CARDS — 3 níveis pro olho ter onde descansar/ser atraído
+   ========================================================================= */
+
+/* Card destaque: borda jade, gradient interno mais forte. Use em alertas
+   importantes, "Veredito" do simulador, etc. */
+.card-feature {
+  background:
+    linear-gradient(180deg, rgba(61, 214, 140, 0.045), transparent 50%),
+    var(--surface);
+  border: 1px solid rgba(61, 214, 140, 0.22);
+  position: relative;
+  isolation: isolate;
+}
+.card-feature > * { position: relative; z-index: 1; }
+.card-feature::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(61,214,140,.10), transparent 45%);
+  opacity: .6;
+  z-index: 0;
+}
+
+/* Card hero: protagonista da tela. Sombra dramática, radius maior,
+   ring sutil. Use em UM card por tela (ex.: Saldo do mês). */
+.card-hero {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 50%),
+    var(--surface-2);
+  border: 1px solid rgba(61, 214, 140, 0.18);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hero);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate; /* cria stacking context; ::after fica atrás do conteúdo */
+}
+.card-hero > * { position: relative; z-index: 1; }
+.card-hero::after {
+  content: ""; position: absolute; top: -40%; right: -20%;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(61, 214, 140, 0.18), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* KPI hero responsivo: nunca estoura, mas continua dramático no desktop */
+.card-hero .kpi-value {
+  font-size: clamp(24px, 4.5vw + 6px, 34px);
+  letter-spacing: -0.045em;
+}
+
+/* =========================================================================
+   KPI VALUE — clamp pra não estourar em mobile com R$ 1.234.567,89
+   ========================================================================= */
+.kpi-value {
+  font-size: clamp(20px, 2.5vw + 6px, 26px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================================
+   MOTION — entradas orquestradas (uma orquestração > 10 microinterações)
+   ========================================================================= */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-soft {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+  50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Hero da home: stagger orquestrado de 5 elementos */
+.hero-text > .pill         { animation: rise .7s 0.00s var(--ease-out-soft) both; }
+.hero-text > .hero-title   { animation: rise .8s 0.08s var(--ease-out-soft) both; }
+.hero-text > .hero-sub     { animation: rise .7s 0.20s var(--ease-out-soft) both; }
+.hero-text > .hero-bullets { animation: rise .7s 0.32s var(--ease-out-soft) both; }
+.hero-text > .hero-cta     { animation: rise .7s 0.42s var(--ease-out-soft) both; }
+.rc-card                   { animation: rise .9s 0.50s var(--ease-out-soft) both; }
+
+/* Pulse permanente no pill-dot (sinal "live/beta") */
+.pill-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
+
+/* Dashboard: KPIs entram em cascata sutil */
+.grid-cards > .card { animation: rise .55s var(--ease-out-soft) both; }
+.grid-cards > .card:nth-child(1) { animation-delay: 0.05s; }
+.grid-cards > .card:nth-child(2) { animation-delay: 0.11s; }
+.grid-cards > .card:nth-child(3) { animation-delay: 0.17s; }
+.grid-cards > .card:nth-child(4) { animation-delay: 0.23s; }
+
+/* Cards genéricos do .content: fade suave de entrada */
+.content > .card,
+.content > .grid { animation: fade-soft .5s ease-out both; }
+
+/* Hover refinado em todos os cards (eleva levemente, borda acende).
+   Só em dispositivos com hover REAL (mouse). Em touchscreens, o pulo
+   ficaria parado depois do tap e atrapalha visualmente. */
+.card { transition: border-color .2s var(--ease-out-soft),
+                    transform .25s var(--ease-out-soft),
+                    box-shadow .25s var(--ease-out-soft); }
+@media (hover: hover) and (pointer: fine) {
+  .card:hover { transform: translateY(-2px); border-color: var(--surface-3); }
+  .card-feature:hover { border-color: rgba(61, 214, 140, 0.45); }
+  .card-hero:hover { transform: translateY(-3px); }
+}
+
+/* Brand "Finance|Scope" — sublinhado animado no hover */
+.brand-name strong { position: relative; }
+a.brand:hover .brand-name strong::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+  height: 2px; background: var(--accent); border-radius: 2px;
+  animation: fade-soft .25s ease-out both;
+}
+
+/* Em mobile, simplificar motion: stagger pesado em tela pequena confunde.
+   Mantém fade suave, remove translate. */
+@media (max-width: 880px) {
+  .grid-cards > .card,
+  .content > .card,
+  .content > .grid { animation: fade-soft .4s ease-out both; }
+  .grid-cards > .card:nth-child(n) { animation-delay: 0s; }
+  .hero-text > * { animation: fade-soft .6s ease-out both; }
+  .hero-text > .hero-title   { animation-delay: .05s; }
+  .hero-text > .hero-sub     { animation-delay: .10s; }
+  .hero-text > .hero-bullets { animation-delay: .15s; }
+  .hero-text > .hero-cta     { animation-delay: .20s; }
+  .rc-card                   { animation: fade-soft .7s .25s ease-out both; }
+}
+
+/* Respeita preferência do usuário: motion off = motion off. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -4,6 +4,10 @@
 {% block page_title %}Relatórios{% endblock %}
 {% block page_subtitle %}Análise por período{% endblock %}
 
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+{% endblock %}
+
 {% block topbar_actions %}
   <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir / Salvar PDF</button>
 {% endblock %}

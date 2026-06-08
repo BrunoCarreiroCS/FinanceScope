@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,800&family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body class="auth">
@@ -29,10 +29,12 @@
     <form method="post" class="form" autocomplete="on">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <label>E-mail
-        <input type="email" name="email" value="{{ form.email or '' }}" required autofocus />
+        <input type="email" name="email" value="{{ form.email or '' }}"
+               autocomplete="email" required autofocus />
       </label>
       <label>Senha
-        <input type="password" name="password" required />
+        <input type="password" name="password"
+               autocomplete="current-password" required />
       </label>
       <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Entrar</button>
     </form>
