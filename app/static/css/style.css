@@ -577,11 +577,26 @@ body.auth {
   /* Main ganha padding pra não passar embaixo do hambúrguer */
   .main { padding: 70px 16px 24px; min-height: auto; }
 
-  /* Topbar empilha (saudação em cima, ações embaixo) */
-  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .topbar-actions { width: 100%; justify-content: flex-end; }
-  .greet-name { font-size: 22px; }
-  .page-title { font-size: 19px; }
+  /* Topbar: saudação à esquerda, avatar à direita — na MESMA linha.
+     greet-hi (pequeno) e greet-name (grande) empilham dentro do .topbar-greet. */
+  .topbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .topbar-greet { min-width: 0; flex: 1; }
+  .topbar-actions {
+    flex-shrink: 0;
+    width: auto;
+    gap: 10px;
+  }
+  .greet-hi { font-size: 13px; }
+  .greet-name { font-size: 20px; line-height: 1.1; }
+  .page-title { font-size: 19px; line-height: 1.2; }
+  .page-subtitle { font-size: 12.5px; }
+  .avatar { width: 38px; height: 38px; font-size: 14px; }
 
   /* Todos os grids em coluna única */
   .grid-cards,
@@ -590,7 +605,9 @@ body.auth {
   .form-grid,
   .features { grid-template-columns: 1fr !important; }
 
-  /* Cards menores */
+  /* Cards menores e mais juntos */
+  .content { gap: 14px; }
+  .grid { gap: 14px; }
   .card { padding: 16px; border-radius: 12px; }
   .kpi-value { font-size: 22px; }
 
