@@ -703,28 +703,8 @@ body.home {
 .home-nav .brand-name { font-size: 18px; }
 .home-nav-links { display: flex; gap: 10px; align-items: center; }
 
-/* Watermark da logo: enorme atrás do hero. Dessaturado pra não brigar com a
-   identidade verde, mas mais aparente que o pattern do fundo. */
-.home-watermark {
-  position: absolute;
-  top: 6%;
-  right: -100px;
-  width: 580px;
-  max-width: 55vw;
-  opacity: 0.10;
-  filter: grayscale(1) brightness(1.4);
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
-}
+/* Mantém o z-index do conteúdo da home acima do pattern de fundo. */
 .hero, .features, .trust, .home-foot, .home-nav { position: relative; z-index: 1; }
-
-@media (max-width: 880px) {
-  .home-watermark {
-    top: auto; bottom: -40px; right: -80px;
-    width: 380px; opacity: 0.08;
-  }
-}
 
 /* hero */
 .hero {
