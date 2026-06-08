@@ -154,7 +154,9 @@ a.brand:hover { background: var(--surface); }
 .page-title    { font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
 .page-subtitle { margin: 4px 0 0; color: var(--text-muted); }
 
+.topbar-greet   { flex: 1; min-width: 0; }
 .topbar-actions { display: flex; align-items: center; gap: 14px; }
+.topbar-user    { display: flex; align-items: center; }
 .avatar {
   width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center; font-weight: 700; color: #04140c;
@@ -574,29 +576,42 @@ body.auth {
   }
   .sidebar-overlay.is-open { opacity: 1; visibility: visible; }
 
-  /* Main ganha padding pra não passar embaixo do hambúrguer */
-  .main { padding: 70px 16px 24px; min-height: auto; }
+  /* Main: padding-top respeita o notch/barra do Safari (safe-area-inset-top)
+     somado a 70px para o hambúrguer fixo não cobrir o conteúdo. */
+  .main {
+    padding: calc(70px + env(safe-area-inset-top, 0px))
+             max(16px, env(safe-area-inset-right, 0px))
+             max(24px, env(safe-area-inset-bottom, 0px))
+             max(16px, env(safe-area-inset-left, 0px));
+    min-height: auto;
+  }
+  /* Hambúrguer também respeita o notch (sobe/desce conforme o iPhone). */
+  .hamburger { top: calc(14px + env(safe-area-inset-top, 0px)); }
 
-  /* Topbar: saudação à esquerda, avatar à direita — na MESMA linha.
-     greet-hi (pequeno) e greet-name (grande) empilham dentro do .topbar-greet. */
+  /* Topbar em grid: saudação à esquerda, avatar à direita (mesma linha).
+     Se houver botões de ação, eles ficam na linha de baixo. */
   .topbar {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "greet user"
+      "actions actions";
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    column-gap: 12px;
+    row-gap: 10px;
     margin-bottom: 16px;
   }
-  .topbar-greet { min-width: 0; flex: 1; }
-  .topbar-actions {
-    flex-shrink: 0;
-    width: auto;
-    gap: 10px;
-  }
-  .greet-hi { font-size: 13px; }
-  .greet-name { font-size: 20px; line-height: 1.1; }
-  .page-title { font-size: 19px; line-height: 1.2; }
-  .page-subtitle { font-size: 12.5px; }
-  .avatar { width: 38px; height: 38px; font-size: 14px; }
+  .topbar-greet   { grid-area: greet; min-width: 0; }
+  .topbar-user    { grid-area: user; }
+  .topbar-actions { grid-area: actions; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+  .topbar-actions:empty { display: none; }
+  .topbar-actions .btn { padding: 8px 12px; font-size: 12.5px; }
+
+  .greet-hi      { font-size: 13px; }
+  .greet-name    { font-size: 20px; line-height: 1.1; }
+  .page-title    { font-size: 19px; line-height: 1.2; }
+  .page-subtitle { font-size: 12.5px; white-space: normal; }
+  .avatar        { width: 38px; height: 38px; font-size: 14px; }
 
   /* Todos os grids em coluna única */
   .grid-cards,
