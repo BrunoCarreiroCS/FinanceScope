@@ -17,13 +17,13 @@ function initMobileSidebar() {
 
   const open = () => {
     sidebar.classList.add("is-open");
-    overlay.hidden = false;
+    overlay.classList.add("is-open");
     btn.setAttribute("aria-expanded", "true");
     document.body.style.overflow = "hidden"; // trava scroll de fundo
   };
   const close = () => {
     sidebar.classList.remove("is-open");
-    overlay.hidden = true;
+    overlay.classList.remove("is-open");
     btn.setAttribute("aria-expanded", "false");
     document.body.style.overflow = "";
   };

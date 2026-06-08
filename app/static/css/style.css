@@ -560,13 +560,19 @@ body.auth {
   }
   .sidebar.is-open { transform: translateX(0); }
 
-  /* Overlay escuro atrás da sidebar */
+  /* Overlay escuro atrás da sidebar — só aparece com .is-open.
+     Sem isso, o backdrop-filter ficaria sempre ativo, deixando a tela
+     "embaçada" mesmo com o menu fechado. */
   .sidebar-overlay {
     display: block;
     position: fixed; inset: 0; z-index: 95;
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, visibility .2s;
   }
+  .sidebar-overlay.is-open { opacity: 1; visibility: visible; }
 
   /* Main ganha padding pra não passar embaixo do hambúrguer */
   .main { padding: 70px 16px 24px; min-height: auto; }
