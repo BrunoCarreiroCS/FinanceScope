@@ -37,6 +37,11 @@ function initMobileSidebar() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && sidebar.classList.contains("is-open")) close();
   });
+  // Girar o celular pra paisagem (ou redimensionar pra desktop) com o menu
+  // aberto deixaria sidebar + overlay travados sobre o layout — fecha.
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 880 && sidebar.classList.contains("is-open")) close();
+  });
 }
 
 // Menu do avatar (canto superior direito): abre/fecha no clique,

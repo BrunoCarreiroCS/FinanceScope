@@ -42,8 +42,33 @@
 </div>
 {% endif %}
 
+<!-- Saldo: manchete da edição — faixa de largura total com o dial -->
+{% if d.monthly_hours and d.monthly_hours > 0 %}
+  {% set dial_pct = (d.expense_hours / d.monthly_hours * 100)|round|int %}
+  {% set dial_cap = "do seu mês de trabalho" %}
+{% elif d.income and d.income > 0 %}
+  {% set dial_pct = (d.expense / d.income * 100)|round|int %}
+  {% set dial_cap = "da renda consumida" %}
+{% else %}
+  {% set dial_pct = 0 %}
+  {% set dial_cap = "do seu mês" %}
+{% endif %}
+{% set dial_pct = 100 if dial_pct > 100 else dial_pct %}
+<div class="card card-hero kpi">
+  <div class="kpi-top">
+    <span class="kpi-label">Saldo {{ info("O que sobrou no mês: receitas − despesas. O anel mostra quanto do seu mês de trabalho as despesas já consumiram.") }}</span>
+  </div>
+  <span class="kpi-value {{ 'income' if d.balance >= 0 else 'expense' }}">{{ d.balance|brl }}</span>
+  <span class="kpi-hint small"><code>receitas - despesas</code></span>
+  <div class="dial" style="--p: {{ dial_pct }}" role="img"
+       aria-label="{{ dial_pct }}% {{ dial_cap }}">
+    <span class="dial-val">{{ dial_pct }}%</span>
+    <span class="dial-cap">{{ dial_cap }}</span>
+  </div>
+</div>
+
 <!-- Cards principais -->
-<div class="grid grid-cards">
+<div class="grid grid-cards grid-3">
   <div class="card kpi">
     <div class="kpi-top">
       <span class="kpi-label">Receitas do mês</span>
@@ -64,19 +89,13 @@
     </div>
     <span class="kpi-value expense">{{ d.expense|brl }}</span>
     <span class="kpi-hint small">
-      {% if d.expense_hours_label %}≈ {{ d.expense_hours_label }} de trabalho{% else %}total gasto no período{% endif %}
+      {% if d.expense_hours_label %}
+        <span class="time-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          {{ d.expense_hours_label }} de trabalho
+        </span>
+      {% else %}total gasto no período{% endif %}
     </span>
-  </div>
-
-  <div class="card card-hero kpi">
-    <div class="kpi-top">
-      <span class="kpi-label">Saldo {{ info("O que sobrou no mês: receitas − despesas. Verde é positivo, vermelho é negativo.") }}</span>
-      <span class="kpi-chip is-info">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
-      </span>
-    </div>
-    <span class="kpi-value {{ 'income' if d.balance >= 0 else 'expense' }}">{{ d.balance|brl }}</span>
-    <span class="kpi-hint small"><code>receitas - despesas</code></span>
   </div>
 
   <div class="card kpi">

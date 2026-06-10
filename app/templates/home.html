@@ -14,7 +14,7 @@
   <!-- Topo -->
   <header class="home-nav">
     <div class="brand">
-      <img class="brand-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="FinanceScope" />
+      <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FinanceScope" />
       <span class="brand-name">Finance<strong>Scope</strong></span>
     </div>
     {% if g.user %}
@@ -63,7 +63,7 @@
     <div class="hero-visual">
       <div class="rc-card">
         <div class="rc-head">
-          <span class="kpi-chip is-gold">
+          <span class="kpi-chip is-amber ring-chip" style="--p: 12">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           </span>
           <div>
@@ -75,7 +75,7 @@
         <div class="rc-rows">
           <div class="rc-row">
             <span>Custo em tempo</span>
-            <strong class="accent">18h40 de trabalho</strong>
+            <strong class="time">18h40 de trabalho</strong>
           </div>
           <div class="rc-row">
             <span>Impacto na renda</span>
@@ -83,7 +83,7 @@
           </div>
           <div class="rc-row">
             <span>Atraso na meta</span>
-            <strong class="down">+0,7 mês</strong>
+            <strong class="down">≈ 21 dias</strong>
           </div>
           <div class="rc-row">
             <span>Risco</span>
@@ -93,13 +93,14 @@
 
         <p class="rc-msg">
           "Esta compra equivale a <strong>18h40</strong> de trabalho e pode atrasar
-          sua meta em <strong>0,7 mês</strong>, com base nos seus dados."
+          sua meta em cerca de <strong>21 dias</strong>, com base nos seus dados."
         </p>
       </div>
     </div>
   </section>
 
   <!-- Recursos -->
+  <h2 class="section-kicker">O que o FinanceScope faz</h2>
   <section class="features">
     <div class="feature">
       <span class="kpi-chip is-up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>

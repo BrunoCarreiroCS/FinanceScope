@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
-  <rect width="24" height="24" rx="6" fill="#16c784"/>
-  <path d="M5 16l4-4 3 2 5-6" fill="none" stroke="#04140c" stroke-width="2.3"
-        stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="32" height="32">
+  <defs>
+    <linearGradient id="fs-jade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3dd68c"/>
+      <stop offset="1" stop-color="#1faf6a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="17" fill="none" stroke="url(#fs-jade)"
+          stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="80 26.81"/>
+  <circle cx="36" cy="12" r="4" fill="#f0a64b"/>
 </svg>

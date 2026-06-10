@@ -316,4 +316,5 @@ def build_dashboard(db, user, today: Optional[date] = None) -> dict:
         "evolution": monthly_evolution(db, user_id, today),
         "alerts": build_alerts(user, totals, forecast, balance),
         "days_in_month": calendar.monthrange(today.year, today.month)[1],
+        "monthly_hours": monthly_hours,
     }
