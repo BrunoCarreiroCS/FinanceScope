@@ -78,19 +78,23 @@
         </div>
         <div class="rc-row">
           <span>Impacto na renda {{ info("Quanto a compra representa da sua renda mensal: (valor ÷ renda) × 100.") }}</span>
-          <strong>{{ '%.1f'|format(result.income_impact_pct) ~ '%' if result.income_impact_pct is not none else '—' }}</strong>
+          <strong>{{ ('%.1f'|format(result.income_impact_pct))|replace('.', ',') ~ '%' if result.income_impact_pct is not none else '—' }}</strong>
         </div>
         {% if result.installments > 1 %}
         <div class="rc-row">
           <span>Por parcela ({{ result.installments }}x) {{ info("Valor de cada parcela e quanto ela pesa na sua renda todo mês.") }}</span>
-          <strong>{{ result.installment_value|brl }} · {{ '%.1f'|format(result.monthly_impact_pct) ~ '%' if result.monthly_impact_pct is not none else '—' }} da renda</strong>
+          <strong>{{ result.installment_value|brl }} · {{ ('%.1f'|format(result.monthly_impact_pct))|replace('.', ',') ~ '%' if result.monthly_impact_pct is not none else '—' }} da renda</strong>
         </div>
         {% endif %}
         <div class="rc-row">
           <span>Atraso na meta {{ info("Quantos meses de aporte essa compra consome: valor ÷ aporte mensal da meta principal.") }}</span>
-          <strong class="down">
-            {% if result.goal_delay_months %}+{{ '%.1f'|format(result.goal_delay_months) }} meses{% else %}—{% endif %}
-          </strong>
+          {% if result.goal_delay_label == 'sem impacto' %}
+            <strong class="accent">sem impacto</strong>
+          {% elif result.goal_delay_label %}
+            <strong class="down">{{ result.goal_delay_label }}</strong>
+          {% else %}
+            <strong>—</strong>
+          {% endif %}
         </div>
         <div class="rc-row">
           <span>Risco {{ info("Classificação pelo impacto na renda: baixo (até 5%), médio (5–15%) ou alto (acima de 15%).") }}</span>

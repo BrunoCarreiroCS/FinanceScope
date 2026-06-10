@@ -86,6 +86,36 @@ def hours_to_hm(hours: Optional[float]) -> Optional[str]:
     return f"{h}h{m:02d}"
 
 
+def decimal_br(value: float, digits: int = 1) -> str:
+    """50.0 -> '50' | 0.3 -> '0,3'. Formato pt-BR, sem ',0' redundante."""
+    txt = f"{value:.{digits}f}".replace(".", ",")
+    if txt.endswith(",0"):
+        txt = txt[:-2]
+    return txt
+
+
+def goal_delay_label(delay: Optional[float]) -> Optional[str]:
+    """
+    Atraso da meta em texto humano (1 mês ~ 30 dias):
+      None          -> None  (sem meta ou sem aporte)
+      < 1 dia       -> 'sem impacto'
+      < 1 mês       -> '≈ N dias'
+      >= 1 mês      -> 'X meses' ('1 mês' no singular, vírgula pt-BR)
+    Evita o anticlímax de mostrar '0.0 meses' para compras pequenas.
+    """
+    if delay is None:
+        return None
+    days = delay * 30
+    if days < 1:
+        return "sem impacto"
+    if delay < 1:
+        d = round(days)
+        return f"≈ {d} dia" + ("s" if d != 1 else "")
+    txt = decimal_br(delay)
+    unit = "mês" if txt == "1" else "meses"
+    return f"{txt} {unit}"
+
+
 # --- Classificacao de risco ------------------------------------------------
 
 RISK_LOW = "baixo"
@@ -124,6 +154,7 @@ class PurchaseAnalysis:
     monthly_impact_pct: Optional[float]
     risk: str
     goal_delay_months: Optional[float]
+    goal_delay_label: Optional[str]
     message: str
 
 
@@ -195,11 +226,25 @@ def analyze_purchase(
     if hours is not None:
         parts.append(f"equivale a {hours_to_hm(hours)} de trabalho")
     if impact is not None:
-        parts.append(f"representa {impact:.1f}% da sua renda mensal")
-    if delay is not None and delay > 0:
-        parts.append(f"pode atrasar sua meta em {delay:.1f} meses")
+        parts.append(f"representa {decimal_br(impact)}% da sua renda mensal")
+
+    # Atraso da meta: "0.0 meses" e anticlimatico — abaixo de 1 dia de
+    # aporte, viramos a frase pro lado positivo; abaixo de 1 mes, falamos
+    # em dias (escala que o usuario sente).
+    goal_note = ""
+    if delay is not None:
+        days = delay * 30
+        if days < 1:
+            goal_note = " Ela não deve influenciar sua meta principal."
+        elif delay < 1:
+            d = round(days)
+            dia = f"{d} dia" + ("s" if d != 1 else "")
+            parts.append(f"pode atrasar sua meta em cerca de {dia}")
+        else:
+            parts.append(f"pode atrasar sua meta em {goal_delay_label(delay)}")
+
     body = "; ".join(parts) if parts else "complete seu perfil financeiro para uma analise completa"
-    message = f"Esta compra {body}, considerando os dados informados no perfil."
+    message = f"Esta compra {body}, considerando os dados informados no perfil.{goal_note}"
 
     return PurchaseAnalysis(
         amount=amount,
@@ -211,5 +256,6 @@ def analyze_purchase(
         monthly_impact_pct=monthly_impact,
         risk=risk,
         goal_delay_months=delay,
+        goal_delay_label=goal_delay_label(delay),
         message=message,
     )

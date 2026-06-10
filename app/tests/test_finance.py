@@ -146,6 +146,42 @@ def test_analyze_purchase_sem_perfil_nao_quebra():
     assert "complete seu perfil" in r.message
 
 
+# --- rotulo humano do atraso da meta ---------------------------------------
+
+def test_goal_delay_label_sem_meta():
+    assert f.goal_delay_label(None) is None
+
+
+def test_goal_delay_label_menos_de_um_dia():
+    # 0.02 mes ~ 0,6 dia: nao assusta o usuario com "0.0 meses"
+    assert f.goal_delay_label(0.02) == "sem impacto"
+
+
+def test_goal_delay_label_em_dias():
+    assert f.goal_delay_label(0.5) == "≈ 15 dias"
+
+
+def test_goal_delay_label_singular():
+    assert f.goal_delay_label(1.0) == "1 mês"
+
+
+def test_goal_delay_label_meses_com_virgula():
+    assert f.goal_delay_label(2.5) == "2,5 meses"
+
+
+def test_analyze_purchase_pequena_nao_mostra_zero_meses():
+    # R$ 10 com aporte de R$ 500: atraso de 0.02 mes (menos de 1 dia).
+    r = f.analyze_purchase(10, 1, 3000, 160, 500)
+    assert "0.0" not in r.message and "0,0 mes" not in r.message
+    assert "não deve influenciar sua meta principal" in r.message
+    assert r.goal_delay_label == "sem impacto"
+
+
+def test_decimal_br_usa_virgula_e_corta_zero():
+    assert f.decimal_br(0.3) == "0,3"
+    assert f.decimal_br(50.0) == "50"
+
+
 # --- veredito do simulador ------------------------------------------------
 
 def test_verdict_vale_a_pena():
