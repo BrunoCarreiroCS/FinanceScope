@@ -3,7 +3,7 @@
 [![CI](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Flask](https://img.shields.io/badge/flask-3.x-black)
-![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 > **Entenda seu dinheiro. Decida melhor. Viva leve.**
@@ -46,7 +46,11 @@ Assim, o app não funciona apenas como histórico financeiro, mas como uma
 Um tênis de R$ 350 não custa "R$ 350".
 
 Ele custa **18h40 de trabalho**, **11,7% da sua renda do mês** e atrasa sua
-reserva em **0,7 mês**.
+reserva em cerca de **21 dias**.
+
+E quando a compra é pequena demais para importar, o app diz isso com todas
+as letras — *"esta compra não deve influenciar sua meta principal"* — em vez
+de assustar com um "0.0 meses".
 
 Esses cálculos rodam em **toda compra**: no dashboard, no detalhe de cada
 despesa e no simulador "Posso comprar?" — que dá um veredito claro:
@@ -101,11 +105,15 @@ Base de cálculo do RealCost (renda, horas, meta).
 - **Segurança** — hash de senha (Werkzeug), proteção CSRF, cookies hardened
 - **Banco de dados** — SQLite com constraints e foreign keys (5 tabelas)
 - **Regras de negócio** — RealCost Engine centralizado e testável
-- **Testes** — pytest com 54 testes (auth, RealCost, relatórios, CSV)
+- **Testes** — pytest com 61 testes (auth, RealCost, relatórios, CSV)
 - **CI/CD** — GitHub Actions (Python 3.11 e 3.12) + ruff (lint)
 - **Deploy** — PythonAnywhere com HTTPS e banco persistente
-- **Frontend** — CSS puro (sem framework), dark mode, responsivo
-- **Visualização** — Chart.js (donut, linha de evolução)
+- **Frontend** — CSS puro (~1.100 linhas, sem framework), design system
+  próprio com tokens, motion orquestrado e acessibilidade (ARIA, reduced-motion)
+- **Identidade visual** — marca vetorial própria, tipografia editorial
+  (Fraunces + Geist + JetBrains Mono) e conceito "Relógio de Vida"
+- **Visualização** — Chart.js (donut, linha) + dial de tempo em CSS puro
+  (conic-gradient animado)
 - **Importação** — parser flexível de CSV de extratos bancários
 - **Documentação** — README, DEPLOY, comentários e docstrings
 
@@ -116,7 +124,7 @@ Base de cálculo do RealCost (renda, horas, meta).
 | Módulo | O que faz |
 |---|---|
 | 🔐 Login | Cadastro/login multiusuário com senha em hash + CSRF |
-| 📊 Dashboard | Receitas, despesas, saldo, previsão e alertas |
+| 📊 Dashboard | Saldo com anel "Relógio de Vida", previsão e alertas |
 | 💸 Transações | CRUD com filtros (mês/tipo/categoria) |
 | 📥 Importação CSV | Upload de extratos com pré-visualização |
 | 🧮 RealCost | Cada gasto em horas, % e atraso na meta |
@@ -135,20 +143,23 @@ Base de cálculo do RealCost (renda, horas, meta).
 - Werkzeug (scrypt para senhas)
 
 **Frontend**
-- Jinja2 · CSS puro · Inter (Google Fonts)
+- Jinja2 · CSS puro
+- Tipografia: Fraunces (display) · Geist (corpo) · JetBrains Mono (valores)
 - Chart.js (CDN)
 
 **Qualidade**
-- pytest (54 testes)
+- pytest (61 testes)
 - ruff (linter)
 - GitHub Actions (CI)
 
 **Deploy**
 - PythonAnywhere (HTTPS, banco persistente, gratuito)
 
-> **Por que sem framework de CSS?** Tudo é CSS próprio (~800 linhas) — usa
-> variáveis, grid, flex, dark mode, estados de hover/focus, responsivo e
-> tema claro para impressão do PDF.
+> **Por que sem framework de CSS?** Tudo é CSS próprio (~1.100 linhas) —
+> design tokens, grid/flex, motion com `@keyframes` + `@property`
+> (anéis animados via `conic-gradient`), `prefers-reduced-motion`,
+> responsivo com `safe-area-inset` (notch do iPhone) e tema claro
+> para impressão do PDF.
 
 ---
 
@@ -173,16 +184,23 @@ confiança e ensina enquanto usa.
 
 ---
 
-## 🎨 Identidade visual
+## 🎨 Identidade visual: "Relógio de Vida"
 
-Inspirada em duas referências bem conhecidas:
+O design parte da mesma ideia do produto — **dinheiro é tempo** — e a
+transforma em linguagem visual:
 
-- **Binance** — dark profissional, números grandes tabulares, paleta
-  verde "alta" / vermelho "baixa" / dourado de atenção
-- **Organizze** — leveza, círculos coloridos de categoria, linguagem
-  amigável, tooltips didáticos
+- 🟢 **Jade** (`#3dd68c`) é a cor do *dinheiro*: marca, botões, destaques
+- 🟠 **Âmbar** (`#f0a64b`) é a cor do *tempo*: dials, chips de horas,
+  anéis de progresso
+- ⭕ **A logo** é um anel aberto com um ponto âmbar — o mesmo dial que
+  aparece no dashboard mostrando quanto do seu mês de trabalho as
+  despesas já consumiram
+- 📰 **Camada editorial**: tipografia serifada de display (Fraunces) nas
+  manchetes, kickers em caps com fios finos (estética de revista) e
+  valores financeiros em monospace (JetBrains Mono)
 
-O resultado é um SaaS sério mas **acolhedor**.
+Os dados financeiros (verde "alta" / vermelho "baixa") ficam **separados
+das cores de marca** — como em produtos financeiros sérios.
 
 ---
 
@@ -240,8 +258,8 @@ app/
 │   ├── csv_import.py       # parser flexível de extratos
 │   └── forms.py            # parsing/validação de inputs
 ├── templates/              # Jinja2 (landing, auth, app)
-├── static/                 # CSS, JS, favicon
-└── tests/                  # pytest (54 testes)
+├── static/                 # CSS, JS, logo SVG, favicon
+└── tests/                  # pytest (61 testes)
 ```
 
 **Padrões aplicados:**
