@@ -97,6 +97,11 @@ Base de cálculo do RealCost (renda, horas, meta).
 
 ![Perfil](docs/screenshots/perfil.png)
 
+### Relatórios
+Análise por período com gráficos e exportação para PDF.
+
+![Relatórios](docs/screenshots/relatorios.png)
+
 ---
 
 ## 💪 Principais competências demonstradas
