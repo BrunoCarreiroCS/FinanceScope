@@ -55,7 +55,7 @@
 
 <form method="post" class="form-actions">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-  <a href="{{ url_for('transacao_importar') }}" class="btn btn-ghost">Cancelar</a>
+  <a href="{{ url_for('transactions.transacao_importar') }}" class="btn btn-ghost">Cancelar</a>
   <button type="submit" class="btn btn-primary">Confirmar e importar</button>
 </form>
 {% endblock %}

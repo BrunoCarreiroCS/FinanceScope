@@ -4,8 +4,8 @@
 {% block page_subtitle %}Receitas e despesas do período{% endblock %}
 
 {% block topbar_actions %}
-  <a href="{{ url_for('transacao_importar') }}" class="btn">Importar CSV</a>
-  <a href="{{ url_for('transacao_nova') }}" class="btn btn-primary">+ Nova transação</a>
+  <a href="{{ url_for('transactions.transacao_importar') }}" class="btn">Importar CSV</a>
+  <a href="{{ url_for('transactions.transacao_nova') }}" class="btn btn-primary">+ Nova transação</a>
 {% endblock %}
 
 {% block content %}
@@ -54,7 +54,7 @@
       {% endfor %}
     </select>
     <button type="submit" class="btn">Filtrar</button>
-    <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Limpar</a>
+    <a href="{{ url_for('transactions.transacoes') }}" class="btn btn-ghost">Limpar</a>
   </form>
 
   {% if rows %}
@@ -71,7 +71,7 @@
       <tr>
         <td class="col-date">{{ t.date|date_br }}</td>
         <td>
-          <a href="{{ url_for('transacao_detalhe', tx_id=t.id) }}" class="link">{{ t.description }}</a>
+          <a href="{{ url_for('transactions.transacao_detalhe', tx_id=t.id) }}" class="link">{{ t.description }}</a>
           {% if t.is_recurring %}<span class="tag">recorrente</span>{% endif %}
         </td>
         <td>
@@ -87,8 +87,8 @@
           {{ '+' if t.type == 'income' else '-' }} {{ t.amount|brl }}
         </td>
         <td class="num actions">
-          <a href="{{ url_for('transacao_editar', tx_id=t.id) }}" class="btn btn-sm">Editar</a>
-          <form method="post" action="{{ url_for('transacao_excluir', tx_id=t.id) }}"
+          <a href="{{ url_for('transactions.transacao_editar', tx_id=t.id) }}" class="btn btn-sm">Editar</a>
+          <form method="post" action="{{ url_for('transactions.transacao_excluir', tx_id=t.id) }}"
                 onsubmit="return confirm('Excluir esta transação?');" style="display:inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
@@ -107,8 +107,8 @@
     <p class="empty-title">Nenhuma transação neste filtro</p>
     <p class="muted small">Cadastre sua primeira movimentação ou importe um extrato em CSV.</p>
     <div class="empty-actions">
-      <a href="{{ url_for('transacao_nova') }}" class="btn btn-sm btn-primary">+ Nova transação</a>
-      <a href="{{ url_for('transacao_importar') }}" class="btn btn-sm">Importar CSV</a>
+      <a href="{{ url_for('transactions.transacao_nova') }}" class="btn btn-sm btn-primary">+ Nova transação</a>
+      <a href="{{ url_for('transactions.transacao_importar') }}" class="btn btn-sm">Importar CSV</a>
     </div>
   </div>
   {% endif %}

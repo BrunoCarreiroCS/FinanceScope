@@ -5,8 +5,8 @@
 {% block page_subtitle %}{{ 'Receita' if tx.type == 'income' else 'Despesa' }} · {{ tx.date|date_br }}{% endblock %}
 
 {% block topbar_actions %}
-  <a href="{{ url_for('transacao_editar', tx_id=tx.id) }}" class="btn">Editar</a>
-  <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Voltar</a>
+  <a href="{{ url_for('transactions.transacao_editar', tx_id=tx.id) }}" class="btn">Editar</a>
+  <a href="{{ url_for('transactions.transacoes') }}" class="btn btn-ghost">Voltar</a>
 {% endblock %}
 
 {% block content %}
@@ -98,7 +98,7 @@
       </p>
     {% else %}
       <p class="muted">
-        Complete seu <a href="{{ url_for('perfil') }}">perfil financeiro</a>
+        Complete seu <a href="{{ url_for('main.perfil') }}">perfil financeiro</a>
         (renda e horas) para ver o custo em horas e o impacto na renda.
       </p>
     {% endif %}

@@ -1,0 +1,1 @@
+"""Blueprints da aplicacao FinanceScope."""

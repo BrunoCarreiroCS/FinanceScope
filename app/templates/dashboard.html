@@ -23,20 +23,20 @@
     <li>
       <strong>Preencha seu perfil</strong>
       <span class="muted small">renda, horas mensais e meta principal</span>
-      <a href="{{ url_for('perfil') }}" class="btn btn-sm btn-primary">Ir ao perfil</a>
+      <a href="{{ url_for('main.perfil') }}" class="btn btn-sm btn-primary">Ir ao perfil</a>
     </li>
     <li>
       <strong>Cadastre algumas transações</strong>
       <span class="muted small">crie manualmente ou importe um CSV de extrato</span>
       <span class="welcome-actions">
-        <a href="{{ url_for('transacao_nova') }}" class="btn btn-sm">+ Nova</a>
-        <a href="{{ url_for('transacao_importar') }}" class="btn btn-sm">Importar CSV</a>
+        <a href="{{ url_for('transactions.transacao_nova') }}" class="btn btn-sm">+ Nova</a>
+        <a href="{{ url_for('transactions.transacao_importar') }}" class="btn btn-sm">Importar CSV</a>
       </span>
     </li>
     <li>
       <strong>Teste o simulador "Posso comprar?"</strong>
       <span class="muted small">veja o impacto real antes de gastar</span>
-      <a href="{{ url_for('simulador') }}" class="btn btn-sm">Abrir simulador</a>
+      <a href="{{ url_for('simulator.simulador') }}" class="btn btn-sm">Abrir simulador</a>
     </li>
   </ol>
 </div>
@@ -184,7 +184,7 @@
   </table>
   </div>
   {% else %}
-  <p class="muted">Cadastre despesas em <a href="{{ url_for('transacoes') }}">Transações</a> para ver o ranking.</p>
+  <p class="muted">Cadastre despesas em <a href="{{ url_for('transactions.transacoes') }}">Transações</a> para ver o ranking.</p>
   {% endif %}
 </div>
 

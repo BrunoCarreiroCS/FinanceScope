@@ -13,7 +13,7 @@
 </head>
 <body class="auth">
   <div class="auth-card">
-    <a href="{{ url_for('home') }}" class="brand auth-brand">
+    <a href="{{ url_for('main.home') }}" class="brand auth-brand">
       <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FinanceScope" width="34" height="34" />
       <span class="brand-name">Finance<strong>Scope</strong></span>
     </a>
@@ -46,7 +46,7 @@
     </form>
 
     <p class="muted small auth-alt">
-      Não tem conta? <a href="{{ url_for('registro') }}" class="link">Criar conta</a>
+      Não tem conta? <a href="{{ url_for('auth.registro') }}" class="link">Criar conta</a>
     </p>
   </div>
 </body>

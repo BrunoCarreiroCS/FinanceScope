@@ -20,11 +20,11 @@
       <span class="brand-name">Finance<strong>Scope</strong></span>
     </div>
     {% if g.user %}
-      <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Ir para o app →</a>
+      <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Ir para o app →</a>
     {% else %}
       <nav class="home-nav-links">
-        <a href="{{ url_for('login') }}" class="btn btn-ghost">Entrar</a>
-        <a href="{{ url_for('registro') }}" class="btn btn-primary">Criar conta →</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Entrar</a>
+        <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Criar conta →</a>
       </nav>
     {% endif %}
   </header>
@@ -52,11 +52,11 @@
 
       <div class="hero-cta">
         {% if g.user %}
-          <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Ir para o app →</a>
-          <a href="{{ url_for('simulador') }}" class="btn btn-ghost btn-lg">Ver o simulador</a>
+          <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">Ir para o app →</a>
+          <a href="{{ url_for('simulator.simulador') }}" class="btn btn-ghost btn-lg">Ver o simulador</a>
         {% else %}
-          <a href="{{ url_for('registro') }}" class="btn btn-primary btn-lg">Começar agora →</a>
-          <a href="{{ url_for('login') }}" class="btn btn-ghost btn-lg">Já tenho conta</a>
+          <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg">Começar agora →</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-lg">Já tenho conta</a>
         {% endif %}
       </div>
     </div>

@@ -8,7 +8,7 @@
 {% block content %}
 <div class="card form-card narrow">
   <form method="post"
-        action="{{ url_for('transacao_editar', tx_id=tx_id) if is_edit else url_for('transacao_nova') }}"
+        action="{{ url_for('transactions.transacao_editar', tx_id=tx_id) if is_edit else url_for('transactions.transacao_nova') }}"
         class="form" autocomplete="off">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
@@ -67,7 +67,7 @@
     </div>
 
     <div class="form-actions">
-      <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Cancelar</a>
+      <a href="{{ url_for('transactions.transacoes') }}" class="btn btn-ghost">Cancelar</a>
       <button type="submit" class="btn btn-primary">{{ 'Salvar alteracoes' if is_edit else 'Adicionar' }}</button>
     </div>
   </form>

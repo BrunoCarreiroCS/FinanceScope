@@ -29,7 +29,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <aside class="sidebar" id="sidebar">
-      <a href="{{ url_for('home') }}" class="brand" title="Voltar à página inicial">
+      <a href="{{ url_for('main.home') }}" class="brand" title="Voltar à página inicial">
         <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FinanceScope" />
         <span class="brand-text">
           <span class="brand-name">Finance<strong>Scope</strong></span>
@@ -39,27 +39,27 @@
 
       <p class="nav-kicker">Menu</p>
       <nav class="nav">
-        <a href="{{ url_for('dashboard') }}" class="nav-item {% if active=='dashboard' %}is-active{% endif %}">
+        <a href="{{ url_for('main.dashboard') }}" class="nav-item {% if active=='dashboard' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
           Dashboard
         </a>
-        <a href="{{ url_for('transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">
+        <a href="{{ url_for('transactions.transacoes') }}" class="nav-item {% if active=='transacoes' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13l-3-3"/><path d="M21 17H8l3 3"/></svg>
           Transações
         </a>
-        <a href="{{ url_for('relatorios') }}" class="nav-item {% if active=='relatorios' %}is-active{% endif %}">
+        <a href="{{ url_for('main.relatorios') }}" class="nav-item {% if active=='relatorios' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><rect x="7" y="11" width="3" height="7"/><rect x="12" y="7" width="3" height="11"/><rect x="17" y="13" width="3" height="5"/></svg>
           Relatórios
         </a>
-        <a href="{{ url_for('metas') }}" class="nav-item {% if active=='metas' %}is-active{% endif %}">
+        <a href="{{ url_for('goals.metas') }}" class="nav-item {% if active=='metas' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
           Metas
         </a>
-        <a href="{{ url_for('simulador') }}" class="nav-item {% if active=='simulador' %}is-active{% endif %}">
+        <a href="{{ url_for('simulator.simulador') }}" class="nav-item {% if active=='simulador' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11"/><line x1="12" y1="11" x2="12" y2="11"/><line x1="16" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/></svg>
           Simulador
         </a>
-        <a href="{{ url_for('perfil') }}" class="nav-item {% if active=='perfil' %}is-active{% endif %}">
+        <a href="{{ url_for('main.perfil') }}" class="nav-item {% if active=='perfil' %}is-active{% endif %}">
           <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
           Perfil
         </a>
@@ -102,16 +102,16 @@
                   <span class="muted small">{{ g.user.email if g.user else 'conta local' }}</span>
                 </div>
               </div>
-              <a href="{{ url_for('perfil') }}" class="dropdown-item">
+              <a href="{{ url_for('main.perfil') }}" class="dropdown-item">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
                 Perfil
               </a>
-              <a href="{{ url_for('home') }}" class="dropdown-item">
+              <a href="{{ url_for('main.home') }}" class="dropdown-item">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
                 Página inicial
               </a>
               <div class="dropdown-sep"></div>
-              <form method="post" action="{{ url_for('sair') }}">
+              <form method="post" action="{{ url_for('auth.sair') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <button type="submit" class="dropdown-item dropdown-danger">
                   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
