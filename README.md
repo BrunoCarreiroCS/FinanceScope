@@ -280,6 +280,26 @@ app/
 
 ---
 
+## 🔌 Integração MCP (RealCost via Claude)
+
+Um servidor **[MCP](https://modelcontextprotocol.io)** (`mcp_server/`) expõe o
+RealCost Engine como ferramentas que um assistente como o **Claude Desktop** pode
+chamar — primeiro passo concreto do *chatbot* do roadmap.
+
+- **Stateless e seguro:** só cálculo puro, não acessa banco nem dados de usuário
+- **Reusa a lógica testada** de [`finance.py`](app/utils/finance.py) (sem duplicação)
+- **Ferramentas:** `analisar_compra` (veredito completo) e `custo_em_horas`
+- **FastMCP (Python)** + avaliações determinísticas em `mcp_server/evaluation.xml`
+
+```
+"Ganho R$ 4.000/mês, 160h, guardo R$ 500. Vale a pena um celular de R$ 3.000 em 10x?"
+   → Claude chama analisar_compra(...) → "Melhor esperar" (7,5% da renda/mês, atraso de 6 meses)
+```
+
+Detalhes em **[`mcp_server/README.md`](mcp_server/README.md)**.
+
+---
+
 ## 🛤️ Como foi construído
 
 Projeto desenvolvido por **fases**, com commits organizados:

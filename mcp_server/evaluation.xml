@@ -1,0 +1,42 @@
+<evaluation>
+  <qa_pair>
+    <question>Com renda mensal de R$ 4.000 e 160 horas trabalhadas no mês, quantas horas de trabalho custa uma compra de R$ 350? Responda no formato "XhYY".</question>
+    <answer>14h00</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Com renda mensal de R$ 3.000 e 160 horas no mês, qual o custo em horas de uma compra de R$ 187,50? Responda no formato "XhYY".</question>
+    <answer>10h00</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Compra de R$ 3.000 em 10x, renda mensal R$ 4.000, 160 horas no mês e aporte de R$ 500 na meta. Qual é o rótulo do veredito?</question>
+    <answer>Melhor esperar</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Para uma compra de R$ 3.000 com renda mensal de R$ 4.000 e 160 horas, qual é o nível de risco (baixo, medio ou alto)?</question>
+    <answer>alto</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Uma compra de R$ 3.000 com aporte mensal de R$ 500 na meta resulta em qual atraso da meta? Responda o texto exato.</question>
+    <answer>6 meses</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Compra de R$ 6.000 em 12x, renda mensal R$ 3.000 e 160 horas no mês. Qual é o rótulo do veredito?</question>
+    <answer>Não compre agora</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Compra de R$ 100, renda mensal R$ 3.000, 160 horas e aporte de R$ 500. Qual é o rótulo do veredito?</question>
+    <answer>Vale a pena</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Uma compra de R$ 10 com aporte mensal de R$ 500 na meta resulta em qual atraso da meta? Responda o texto exato.</question>
+    <answer>sem impacto</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Com renda mensal de R$ 5.000 e 200 horas trabalhadas no mês, qual é o valor da hora em reais?</question>
+    <answer>25</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Ao analisar uma compra de R$ 200 sem informar renda nem horas (ambas zero), qual nível de risco é retornado?</question>
+    <answer>medio</answer>
+  </qa_pair>
+</evaluation>
