@@ -409,6 +409,20 @@ body.auth {
 
 /* chart */
 .chart-box { position: relative; height: 260px; }
+
+/* Skeleton de carregamento (referencia shadcn) — placeholder ate o grafico desenhar. */
+.skeleton {
+  position: absolute; inset: 0; border-radius: var(--radius-sm);
+  background: var(--surface-2); overflow: hidden;
+}
+.skeleton::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-donut { border-radius: 50%; }
+@keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeleton::after { animation: none; } }
 .chart-split { display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: center; }
 @media (max-width: 1180px) { .chart-split { grid-template-columns: 150px 1fr; } }
 .chart-donut { position: relative; height: 180px; }

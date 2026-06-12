@@ -86,9 +86,21 @@ function moeda(v) {
 }
 
 // Dashboard: renderiza o donut de categorias e a linha de evolucao mensal.
+// Remove o skeleton do container de um grafico ja desenhado.
+function clearChartSkeleton(el) {
+  const wrap = el.closest(".chart-box, .chart-donut");
+  const sk = wrap && wrap.querySelector("[data-skeleton]");
+  if (sk) sk.remove();
+}
+
 function initDashboardCharts() {
   const raw = document.getElementById("dash-data");
-  if (!raw || typeof Chart === "undefined") return;
+  if (!raw) return;
+  // Se o Chart.js nao carregou (CDN bloqueado), nao deixa o skeleton girando.
+  if (typeof Chart === "undefined") {
+    document.querySelectorAll("[data-skeleton]").forEach((s) => s.remove());
+    return;
+  }
 
   let data;
   try {
@@ -123,6 +135,7 @@ function initDashboardCharts() {
         },
       },
     });
+    clearChartSkeleton(catEl);
   }
 
   // Linha: receitas x despesas nos ultimos meses.
@@ -161,6 +174,7 @@ function initDashboardCharts() {
         },
       },
     });
+    clearChartSkeleton(evoEl);
   }
 }
 

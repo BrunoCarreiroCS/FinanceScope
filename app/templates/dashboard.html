@@ -131,7 +131,7 @@
     <h3 class="card-title">Gastos por categoria</h3>
     {% if d.categories %}
       <div class="chart-split">
-        <div class="chart-donut"><canvas id="catChart" role="img" aria-label="Gráfico de gastos por categoria; valores detalhados na lista ao lado."></canvas></div>
+        <div class="chart-donut"><div class="skeleton skeleton-donut" data-skeleton></div><canvas id="catChart" role="img" aria-label="Gráfico de gastos por categoria; valores detalhados na lista ao lado."></canvas></div>
         <ul class="legend">
           {% for c in d.categories %}
           <li>
@@ -150,7 +150,7 @@
   <div class="card">
     <h3 class="card-title">Evolução mensal</h3>
     {% if d.evolution and d.evolution|length > 0 %}
-      <div class="chart-box"><canvas id="evoChart" role="img" aria-label="Gráfico de evolução mensal de receitas e despesas."></canvas></div>
+      <div class="chart-box"><div class="skeleton skeleton-chart" data-skeleton></div><canvas id="evoChart" role="img" aria-label="Gráfico de evolução mensal de receitas e despesas."></canvas></div>
     {% else %}
       <div class="empty"><p class="muted">Ainda não há histórico suficiente para a evolução mensal.</p></div>
     {% endif %}
