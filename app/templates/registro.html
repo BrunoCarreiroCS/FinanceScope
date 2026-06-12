@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0e13" />
   <title>Criar conta — {{ app_name }}</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,7 +14,7 @@
 <body class="auth">
   <div class="auth-card">
     <a href="{{ url_for('home') }}" class="brand auth-brand">
-      <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FinanceScope" />
+      <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="FinanceScope" width="34" height="34" />
       <span class="brand-name">Finance<strong>Scope</strong></span>
     </a>
 
@@ -21,9 +22,13 @@
     <p class="muted">Leva menos de um minuto. Seus dados ficam só seus.</p>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, msg in messages %}
-        <div class="flash flash-{{ category }}">{{ msg }}</div>
-      {% endfor %}
+      {% if messages %}
+      <div role="status" aria-live="polite">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
     {% endwith %}
 
     <form method="post" class="form" autocomplete="on" novalidate>
@@ -37,7 +42,7 @@
       </label>
       <label>E-mail
         <input type="email" name="email" value="{{ form.email or '' }}" required
-               autocomplete="email"
+               autocomplete="email" inputmode="email" spellcheck="false"
                aria-invalid="{{ 'true' if errors.email else 'false' }}"
                {% if errors.email %}aria-describedby="err-email"{% endif %} />
         {% if errors.email %}<span id="err-email" class="field-error" role="alert">{{ errors.email }}</span>{% endif %}

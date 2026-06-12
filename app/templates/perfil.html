@@ -44,7 +44,7 @@
       <div class="form-row">
         <label>Nome da meta
           <input type="text" name="goal_name" value="{{ form.goal_name }}"
-                 placeholder="Ex.: Reserva de emergência" />
+                 placeholder="Ex.: Reserva de emergência…" />
         </label>
         {% if errors.goal_name %}<span class="field-error">{{ errors.goal_name }}</span>{% endif %}
       </div>
@@ -72,7 +72,7 @@
   </div>
 
   <div class="side-col">
-    <div class="card kpi">
+    <div class="card kpi" aria-live="polite">
       <span class="kpi-label">Valor da sua hora</span>
       <span class="kpi-value accent" id="hourly-value">
         {% if current_hourly %}R$ {{ '%.2f'|format(current_hourly) }}{% else %}—{% endif %}

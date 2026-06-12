@@ -67,6 +67,36 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
+html { color-scheme: dark; }
+
+/* Skip link: invisivel ate receber foco por teclado. */
+.skip-link {
+  position: absolute; top: -100px; left: 12px; z-index: 200;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--accent); color: #04140c; font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus { top: 12px; outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* Focus visivel padrao para interativos. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.btn:focus-visible,
+.nav-item:focus-visible,
+.dropdown-item:focus-visible,
+.link:focus-visible,
+.avatar:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Tap target sem 300ms delay em mobile. */
+button, a, input, select, textarea, label {
+  touch-action: manipulation;
+}
 body {
   font-family: var(--font-body);
   color: var(--text);
@@ -115,6 +145,7 @@ h1, h2, h3,
   font-weight: 700;
   letter-spacing: -0.025em;
   font-feature-settings: "ss01", "cv11";
+  text-wrap: balance;
 }
 
 /* Números financeiros em mono — vira ASSINATURA visual da marca.
@@ -430,7 +461,7 @@ body.auth {
   font: inherit; transition: border-color .15s, box-shadow .15s, background .15s;
 }
 .form input::placeholder { color: #54606e; }
-.form input:focus, .form select:focus, .toolbar input:focus, .toolbar select:focus {
+.form input:focus-visible, .form select:focus-visible, .toolbar input:focus-visible, .toolbar select:focus-visible {
   outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft); background: var(--surface);
 }
@@ -448,7 +479,8 @@ body.auth {
   font-size: 11px; font-style: italic; font-weight: 700; line-height: 1;
   cursor: help; position: relative;
 }
-.info:hover, .info:focus { background: var(--accent-soft); color: var(--accent); outline: none; }
+.info:hover, .info:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+.info:focus-visible .info-pop { opacity: 1; visibility: visible; }
 .info-pop {
   position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%);
   width: max-content; max-width: 240px;
@@ -462,7 +494,7 @@ body.auth {
   content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
   border: 6px solid transparent; border-top-color: var(--border);
 }
-.info:hover .info-pop, .info:focus .info-pop { opacity: 1; visibility: visible; }
+.info:hover .info-pop { opacity: 1; visibility: visible; }
 
 /* mantem rotulo + icone na mesma linha dentro de labels em coluna */
 .lbl { display: inline-flex; align-items: center; }
@@ -667,7 +699,7 @@ body.auth {
     transition: transform .25s ease;
     box-shadow: 8px 0 30px rgba(0, 0, 0, 0.5);
   }
-  .sidebar.is-open { transform: translateX(0); }
+  .sidebar.is-open { transform: translateX(0); overscroll-behavior: contain; }
 
   /* Overlay escuro atrás da sidebar — só aparece com .is-open.
      Sem isso, o backdrop-filter ficaria sempre ativo, deixando a tela

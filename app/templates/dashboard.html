@@ -11,7 +11,7 @@
 {% if is_new %}
 <div class="card card-feature welcome">
   <div class="welcome-head">
-    <span class="welcome-emoji">👋</span>
+    <span class="welcome-emoji" role="img" aria-label="Bem-vindo">👋</span>
     <div>
       <h3 class="card-title" style="margin:0">Bem-vindo ao FinanceScope!</h3>
       <p class="muted small" style="margin:4px 0 0">
@@ -73,7 +73,7 @@
     <div class="kpi-top">
       <span class="kpi-label">Receitas do mês</span>
       <span class="kpi-chip is-up">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
       </span>
     </div>
     <span class="kpi-value income">{{ d.income|brl }}</span>
@@ -84,14 +84,14 @@
     <div class="kpi-top">
       <span class="kpi-label">Despesas do mês {{ info("Total gasto no período. Abaixo, o equivalente em horas de trabalho (RealCost).") }}</span>
       <span class="kpi-chip is-down">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
       </span>
     </div>
     <span class="kpi-value expense">{{ d.expense|brl }}</span>
     <span class="kpi-hint small">
       {% if d.expense_hours_label %}
         <span class="time-chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
           {{ d.expense_hours_label }} de trabalho
         </span>
       {% else %}total gasto no período{% endif %}
@@ -102,7 +102,7 @@
     <div class="kpi-top">
       <span class="kpi-label">Previsão de fechamento {{ info("Estimativa de quanto você vai gastar até o fim do mês, no ritmo atual: média diária de gastos × dias do mês.") }}</span>
       <span class="kpi-chip is-gold">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       </span>
     </div>
     <span class="kpi-value">{{ d.forecast|brl }}</span>

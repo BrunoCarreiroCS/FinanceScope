@@ -12,7 +12,7 @@
         class="form" autocomplete="off">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    <div class="seg" role="group">
+    <div class="seg" role="group" aria-label="Tipo de transação">
       <label class="seg-item">
         <input type="radio" name="type" value="expense"
                {{ 'checked' if form.type != 'income' }} />
@@ -29,7 +29,7 @@
     <div class="form-row">
       <label>Descrição
         <input type="text" name="description" value="{{ form.description or '' }}"
-               placeholder="Ex.: Mercado, Salário..." required />
+               placeholder="Ex.: Mercado, Salário…" required />
       </label>
       {% if errors.description %}<span class="field-error">{{ errors.description }}</span>{% endif %}
     </div>
@@ -57,7 +57,7 @@
     <div class="form-grid">
       <label>Forma de pagamento
         <input type="text" name="payment_method" value="{{ form.payment_method or '' }}"
-               placeholder="Ex.: Pix, Cartão, Dinheiro" />
+               placeholder="Ex.: Pix, Cartão, Dinheiro…" />
       </label>
       <label class="check">
         <input type="checkbox" name="is_recurring" value="1"

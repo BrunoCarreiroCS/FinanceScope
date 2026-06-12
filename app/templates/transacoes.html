@@ -14,7 +14,7 @@
     <div class="kpi-top">
       <span class="kpi-label">Receitas</span>
       <span class="kpi-chip is-up">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l7-7 7 7"/><path d="M12 5v14"/></svg>
       </span>
     </div>
     <span class="kpi-value income">{{ total_income|brl }}</span>
@@ -23,7 +23,7 @@
     <div class="kpi-top">
       <span class="kpi-label">Despesas</span>
       <span class="kpi-chip is-down">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12l-7 7-7-7"/><path d="M12 19V5"/></svg>
       </span>
     </div>
     <span class="kpi-value expense">{{ total_expense|brl }}</span>
@@ -32,7 +32,7 @@
     <div class="kpi-top">
       <span class="kpi-label">Saldo do período</span>
       <span class="kpi-chip {{ 'is-up' if balance >= 0 else 'is-down' }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
       </span>
     </div>
     <span class="kpi-value {{ 'income' if balance >= 0 else 'expense' }}">{{ balance|brl }}</span>
@@ -41,13 +41,13 @@
 
 <div class="card">
   <form class="toolbar" method="get">
-    <input type="month" name="month" value="{{ filters.month }}" />
-    <select name="type">
+    <input type="month" name="month" value="{{ filters.month }}" aria-label="Mês" />
+    <select name="type" aria-label="Tipo de transação">
       <option value="">Receitas e despesas</option>
       <option value="income"  {{ 'selected' if filters.type == 'income'  }}>Apenas receitas</option>
       <option value="expense" {{ 'selected' if filters.type == 'expense' }}>Apenas despesas</option>
     </select>
-    <select name="category_id">
+    <select name="category_id" aria-label="Categoria">
       <option value="">Todas as categorias</option>
       {% for c in categories %}
         <option value="{{ c.id }}" {{ 'selected' if filters.category_id == c.id|string }}>{{ c.name }}</option>
