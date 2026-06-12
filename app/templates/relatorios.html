@@ -29,7 +29,30 @@
     </label>
     <button type="submit" class="btn">Aplicar</button>
   </form>
+  <div class="period-chips">
+    <a href="{{ url_for('main.relatorios', start=quick.mes.start, end=quick.mes.end) }}"
+       class="chip {% if start == quick.mes.start and end == quick.mes.end %}is-active{% endif %}">Este mês</a>
+    <a href="{{ url_for('main.relatorios', start=quick.tri.start, end=quick.tri.end) }}"
+       class="chip {% if start == quick.tri.start and end == quick.tri.end %}is-active{% endif %}">Últimos 3 meses</a>
+    <a href="{{ url_for('main.relatorios', start=quick.ano.start, end=quick.ano.end) }}"
+       class="chip {% if start == quick.ano.start and end == quick.ano.end %}is-active{% endif %}">Este ano</a>
+  </div>
 </div>
+
+{% if d.count == 0 %}
+<div class="card">
+  <div class="empty empty-block">
+    <span class="empty-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><rect x="7" y="11" width="3" height="7"/><rect x="12" y="7" width="3" height="11"/><rect x="17" y="13" width="3" height="5"/></svg>
+    </span>
+    <p class="empty-title">Nenhum lançamento neste período</p>
+    <p class="muted small">Ajuste as datas acima ou cadastre transações para ver a análise.</p>
+    <div class="empty-actions">
+      <a href="{{ url_for('transactions.transacao_nova') }}" class="btn btn-sm btn-primary">+ Nova transação</a>
+    </div>
+  </div>
+</div>
+{% else %}
 
 <!-- KPIs -->
 <div class="grid grid-cards">
@@ -71,10 +94,15 @@
         <div class="chart-donut"><canvas id="catChart" role="img" aria-label="Gráfico de gastos por categoria; valores detalhados na lista ao lado."></canvas></div>
         <ul class="legend">
           {% for c in d.categories %}
-          <li>
-            <span class="dot" style="background: {{ c.color }}"></span>
-            <span class="legend-name">{{ c.name }}</span>
-            <span class="legend-val">{{ c.total|brl }}</span>
+          {% set pct = (c.total / d.expense * 100) if d.expense else 0 %}
+          <li class="legend-row">
+            <div class="legend-head">
+              <span class="dot" style="background: {{ c.color }}"></span>
+              <span class="legend-name">{{ c.name }}</span>
+              <span class="legend-pct muted">{{ pct|round|int }}%</span>
+              <span class="legend-val">{{ c.total|brl }}</span>
+            </div>
+            <span class="legend-meter"><span style="width: {{ pct|round(1) }}%; background: {{ c.color }}"></span></span>
           </li>
           {% endfor %}
         </ul>
@@ -123,6 +151,40 @@
   <p class="muted">Sem despesas neste período.</p>
   {% endif %}
 </div>
+
+<!-- Transacoes do periodo (lista completa) -->
+<div class="card">
+  <h3 class="card-title">Transações do período</h3>
+  <div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th class="num">Valor</th></tr>
+    </thead>
+    <tbody>
+      {% for t in d.transactions %}
+      <tr>
+        <td class="col-date">{{ t.date|date_br }}</td>
+        <td>
+          <a href="{{ url_for('transactions.transacao_detalhe', tx_id=t.id) }}" class="link">{{ t.description }}</a>
+        </td>
+        <td>
+          <div class="cat-row">
+            <span class="cat" style="background: {{ t.category_color }}">{{ t.category_name[0]|upper }}</span>
+            {{ t.category_name }}
+          </div>
+        </td>
+        <td>{{ 'Receita' if t.type == 'income' else 'Despesa' }}</td>
+        <td class="num {{ 'income' if t.type == 'income' else 'expense' }}">
+          {{ '+' if t.type == 'income' else '-' }} {{ t.amount|brl }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endif %}
 
 <p class="muted small no-print" style="margin-top:4px">
   As análises são estimativas com base nos seus dados.

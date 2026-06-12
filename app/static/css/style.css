@@ -418,6 +418,23 @@ body.auth {
 .legend-name { color: var(--text-2); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .legend-val { color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
 
+/* Legenda enriquecida: linha de cabecalho + barra de proporcao + %. */
+.legend .legend-row { display: flex; flex-direction: column; align-items: stretch; gap: 5px; }
+.legend-head { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.legend-pct { font-variant-numeric: tabular-nums; font-size: 12px; }
+.legend-meter { height: 5px; border-radius: var(--radius-pill); background: var(--bg-2); overflow: hidden; }
+.legend-meter > span { display: block; height: 100%; border-radius: var(--radius-pill); min-width: 2px; }
+
+/* Chips de atalho de periodo nos relatorios. */
+.period-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip {
+  padding: 6px 13px; border-radius: var(--radius-pill); font-size: 12.5px; font-weight: 500;
+  background: var(--bg-2); border: 1px solid var(--border); color: var(--text-2);
+  transition: border-color .15s, color .15s, background .15s;
+}
+.chip:hover { color: var(--text); border-color: var(--surface-3); }
+.chip.is-active { background: var(--accent-soft); border-color: transparent; color: var(--accent); font-weight: 600; }
+
 /* alertas */
 .alert-stack { display: flex; flex-direction: column; gap: 12px; }
 .alert {

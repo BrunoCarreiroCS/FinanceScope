@@ -69,6 +69,24 @@ def test_build_report_por_periodo(db):
     assert r["categories"][0]["name"] == "Moradia"
 
 
+def test_transactions_in_period_lista_tudo_no_intervalo(db):
+    # Junho tem 3 lancamentos (Salario, Aluguel, Mercado); Uber (maio) fica fora.
+    txs = reports.transactions_in_period(db, 1, "2026-06-01", "2026-06-30")
+    assert len(txs) == 3
+    descricoes = [t["description"] for t in txs]
+    assert "Uber" not in descricoes
+    # Mais recente primeiro (Mercado 08/06 antes de Aluguel 06/06).
+    assert txs[0]["description"] == "Mercado"
+    # Inclui receitas e despesas.
+    assert {t["type"] for t in txs} == {"income", "expense"}
+
+
+def test_build_report_expoe_transactions(db):
+    user = db.execute("SELECT * FROM users WHERE id=1").fetchone()
+    r = reports.build_report(db, user, "2026-06-01", "2026-06-30")
+    assert len(r["transactions"]) == 3
+
+
 def test_build_report_inclui_meses_no_intervalo(db):
     user = db.execute("SELECT * FROM users WHERE id=1").fetchone()
     r = reports.build_report(db, user, "2026-05-01", "2026-06-30")

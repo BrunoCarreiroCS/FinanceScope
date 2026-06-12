@@ -51,9 +51,21 @@ def relatorios():
     elif start > end:
         start, end = end, start
 
+    # Atalhos de periodo para os chips da UI (estado refletido na URL).
+    y3, m3 = today.year, today.month - 2
+    while m3 < 1:
+        m3 += 12
+        y3 -= 1
+    quick = {
+        "mes": {"start": today.replace(day=1).isoformat(), "end": today.isoformat()},
+        "tri": {"start": date(y3, m3, 1).isoformat(), "end": today.isoformat()},
+        "ano": {"start": date(today.year, 1, 1).isoformat(), "end": today.isoformat()},
+    }
+
     data = reports.build_report(db, g.user, start, end)
     return render_template(
-        "relatorios.html", active="relatorios", d=data, start=start, end=end
+        "relatorios.html", active="relatorios", d=data,
+        start=start, end=end, quick=quick,
     )
 
 

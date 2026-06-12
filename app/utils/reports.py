@@ -217,6 +217,21 @@ def top_expenses_period(db, user_id: int, start: str, end: str, limit: int = 10)
     return [dict(r) for r in rows]
 
 
+def transactions_in_period(db, user_id: int, start: str, end: str) -> list[dict]:
+    """Todas as transacoes do intervalo (receitas e despesas), mais recentes primeiro."""
+    rows = db.execute(
+        """SELECT t.id, t.type, t.description, t.amount, t.date,
+                  COALESCE(c.name, 'Sem categoria') AS category_name,
+                  COALESCE(c.color, '#7e8a99')      AS category_color
+           FROM transactions t
+           LEFT JOIN categories c ON c.id = t.category_id
+           WHERE t.user_id = ? AND t.date BETWEEN ? AND ?
+           ORDER BY t.date DESC, t.id DESC""",
+        (user_id, start, end),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
+
 def evolution_range(db, user_id: int, start: str, end: str) -> dict:
     """Receitas x despesas por mes dentro do intervalo [start, end]."""
     rows = db.execute(
@@ -276,6 +291,7 @@ def build_report(db, user, start: str, end: str) -> dict:
         "expense_hours_label": finance.hours_to_hm(expense_hours),
         "categories": expenses_by_category_period(db, user_id, start, end),
         "top_expenses": top_expenses_period(db, user_id, start, end),
+        "transactions": transactions_in_period(db, user_id, start, end),
         "evolution": evolution,
         "count": count,
         "avg_monthly_expense": expense / n_months,
