@@ -57,6 +57,8 @@
     <a href="{{ url_for('transacoes') }}" class="btn btn-ghost">Limpar</a>
   </form>
 
+  {% if rows %}
+  <div class="table-wrap">
   <table class="table">
     <thead>
       <tr>
@@ -67,7 +69,7 @@
     <tbody>
       {% for t in rows %}
       <tr>
-        <td>{{ t.date|date_br }}</td>
+        <td class="col-date">{{ t.date|date_br }}</td>
         <td>
           <a href="{{ url_for('transacao_detalhe', tx_id=t.id) }}" class="link">{{ t.description }}</a>
           {% if t.is_recurring %}<span class="tag">recorrente</span>{% endif %}
@@ -93,10 +95,22 @@
           </form>
         </td>
       </tr>
-      {% else %}
-      <tr><td colspan="6" class="muted center">Nenhuma transação neste filtro.</td></tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
+  {% else %}
+  <div class="empty empty-block">
+    <span class="empty-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </span>
+    <p class="empty-title">Nenhuma transação neste filtro</p>
+    <p class="muted small">Cadastre sua primeira movimentação ou importe um extrato em CSV.</p>
+    <div class="empty-actions">
+      <a href="{{ url_for('transacao_nova') }}" class="btn btn-sm btn-primary">+ Nova transação</a>
+      <a href="{{ url_for('transacao_importar') }}" class="btn btn-sm">Importar CSV</a>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

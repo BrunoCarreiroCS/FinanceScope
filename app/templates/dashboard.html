@@ -115,7 +115,7 @@
 <div class="alert-stack">
   {% for a in d.alerts %}
   <div class="alert alert-{{ a.level }}">
-    <span class="risk risk-{{ a.level }}">{{ a.level }}</span>
+    <span class="risk risk-{{ a.level }}">{{ a.level|capitalize }}</span>
     <div>
       <strong>{{ a.title }}</strong>
       <p>{{ a.text }}</p>
@@ -131,7 +131,7 @@
     <h3 class="card-title">Gastos por categoria</h3>
     {% if d.categories %}
       <div class="chart-split">
-        <div class="chart-donut"><canvas id="catChart"></canvas></div>
+        <div class="chart-donut"><canvas id="catChart" role="img" aria-label="Gráfico de gastos por categoria; valores detalhados na lista ao lado."></canvas></div>
         <ul class="legend">
           {% for c in d.categories %}
           <li>
@@ -149,7 +149,11 @@
 
   <div class="card">
     <h3 class="card-title">Evolução mensal</h3>
-    <div class="chart-box"><canvas id="evoChart"></canvas></div>
+    {% if d.evolution and d.evolution|length > 0 %}
+      <div class="chart-box"><canvas id="evoChart" role="img" aria-label="Gráfico de evolução mensal de receitas e despesas."></canvas></div>
+    {% else %}
+      <div class="empty"><p class="muted">Ainda não há histórico suficiente para a evolução mensal.</p></div>
+    {% endif %}
   </div>
 </div>
 
@@ -157,6 +161,7 @@
 <div class="card">
   <h3 class="card-title">Maiores gastos do mês</h3>
   {% if d.top_expenses %}
+  <div class="table-wrap">
   <table class="table">
     <thead>
       <tr><th>Descrição</th><th>Categoria</th><th>Data</th><th class="num">Valor</th></tr>
@@ -171,12 +176,13 @@
             {{ t.category_name }}
           </div>
         </td>
-        <td>{{ t.date|date_br }}</td>
+        <td class="col-date">{{ t.date|date_br }}</td>
         <td class="num expense">{{ t.amount|brl }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% else %}
   <p class="muted">Cadastre despesas em <a href="{{ url_for('transacoes') }}">Transações</a> para ver o ranking.</p>
   {% endif %}
