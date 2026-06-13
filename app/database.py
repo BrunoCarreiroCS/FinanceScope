@@ -20,20 +20,31 @@ def get_db():
         g.db = sqlite3.connect(get_db_path())
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON")
-        _ensure_schema(g.db)
+        if not current_app.config.get("_FINANCESCOPE_SCHEMA_ENSURED"):
+            _ensure_schema(g.db)
+            current_app.config["_FINANCESCOPE_SCHEMA_ENSURED"] = True
     return g.db
 
 
 def _ensure_schema(db):
-    """Migracao leve e idempotente: garante colunas adicionadas apos o MVP.
+    """Migracao leve e idempotente para bancos criados em versoes anteriores.
 
     Bancos antigos (criados antes do token de API) ganham a coluna sem
-    precisar de ALTER manual no deploy. Custa um PRAGMA por conexao.
+    precisar de ALTER manual no deploy. A checagem roda uma vez por app.
     """
+    has_users = db.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'users'"
+    ).fetchone()
+    if not has_users:
+        return
+
     cols = {row["name"] for row in db.execute("PRAGMA table_info(users)").fetchall()}
     if "api_token_hash" not in cols:
         db.execute("ALTER TABLE users ADD COLUMN api_token_hash TEXT")
-        db.commit()
+    db.execute(
+        "CREATE INDEX IF NOT EXISTS idx_users_api_token_hash ON users(api_token_hash)"
+    )
+    db.commit()
 
 
 def close_db(_=None):

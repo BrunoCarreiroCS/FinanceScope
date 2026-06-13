@@ -5,7 +5,7 @@ from datetime import date
 
 def _gen_token(client) -> str:
     """Gera um token para o usuario logado e extrai o texto puro da pagina."""
-    r = client.post("/perfil/token", data={})
+    r = client.post("/perfil/token", data={}, follow_redirects=True)
     m = re.search(r'token-box">([^<]+)<', r.get_data(as_text=True))
     assert m, "token nao apareceu na pagina de perfil"
     return m.group(1)

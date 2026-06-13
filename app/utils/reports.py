@@ -27,6 +27,13 @@ def _shift_month(year: int, month: int, delta: int) -> tuple[int, int]:
     return index // 12, index % 12 + 1
 
 
+def _month_span(start: str, end: str) -> int:
+    """Quantidade inclusiva de meses cobertos por duas datas ISO."""
+    sy, sm = int(start[:4]), int(start[5:7])
+    ey, em = int(end[:4]), int(end[5:7])
+    return max(1, (ey * 12 + em) - (sy * 12 + sm) + 1)
+
+
 def month_totals(db, user_id: int, month_str: str) -> dict:
     """Soma receitas e despesas de um mes (YYYY-MM)."""
     rows = db.execute(
@@ -247,9 +254,7 @@ def evolution_range(db, user_id: int, start: str, end: str) -> dict:
         bucket[r["ym"]][r["type"]] = r["total"]
 
     sy, sm = int(start[:4]), int(start[5:7])
-    ey, em = int(end[:4]), int(end[5:7])
-    n = (ey * 12 + em) - (sy * 12 + sm) + 1
-    n = max(1, min(n, 24))  # evita listas gigantes
+    n = min(_month_span(start, end), 24)  # evita listas gigantes
 
     labels, income_series, expense_series = [], [], []
     for i in range(n):
@@ -272,14 +277,9 @@ def build_report(db, user, start: str, end: str) -> dict:
     monthly_hours = user["monthly_hours"] if user else 0
     expense_hours = finance.cost_in_hours(expense, monthly_income, monthly_hours)
 
-    count = db.execute(
-        """SELECT COUNT(*) AS n FROM transactions
-           WHERE user_id = ? AND date BETWEEN ? AND ?""",
-        (user_id, start, end),
-    ).fetchone()["n"]
-
     evolution = evolution_range(db, user_id, start, end)
-    n_months = max(1, len(evolution["labels"]))
+    transactions = transactions_in_period(db, user_id, start, end)
+    n_months = _month_span(start, end)
 
     return {
         "start": start,
@@ -291,9 +291,9 @@ def build_report(db, user, start: str, end: str) -> dict:
         "expense_hours_label": finance.hours_to_hm(expense_hours),
         "categories": expenses_by_category_period(db, user_id, start, end),
         "top_expenses": top_expenses_period(db, user_id, start, end),
-        "transactions": transactions_in_period(db, user_id, start, end),
+        "transactions": transactions,
         "evolution": evolution,
-        "count": count,
+        "count": len(transactions),
         "avg_monthly_expense": expense / n_months,
         "n_months": n_months,
     }

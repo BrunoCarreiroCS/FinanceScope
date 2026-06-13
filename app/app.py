@@ -92,6 +92,9 @@ def create_app(test_config=None):
     def csrf_protect():
         if not app.config.get("CSRF_ENABLED", True):
             return
+        # A API usa Bearer token e precisa ficar stateless, inclusive em futuros POSTs.
+        if request.path.startswith("/api/"):
+            return
         if request.method == "POST":
             sent = request.form.get("csrf_token")
             real = session.get("_csrf")

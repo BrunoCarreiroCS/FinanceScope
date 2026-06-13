@@ -9,6 +9,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 
@@ -18,6 +19,11 @@ from utils import reports
 from utils.forms import parse_date, parse_decimal
 
 bp = Blueprint("main", __name__)
+
+
+def _month_start_months_ago(today: date, months_ago: int) -> str:
+    y, m = reports._shift_month(today.year, today.month, -months_ago)
+    return date(y, m, 1).isoformat()
 
 
 @bp.route("/")
@@ -37,11 +43,7 @@ def relatorios():
     db = database.get_db()
     today = date.today()
     # Periodo padrao: do 1o dia de 2 meses atras ate hoje (~3 meses).
-    y, m = today.year, today.month - 2
-    while m < 1:
-        m += 12
-        y -= 1
-    default_start = date(y, m, 1).isoformat()
+    default_start = _month_start_months_ago(today, 2)
 
     start = request.args.get("start") or default_start
     end = request.args.get("end") or today.isoformat()
@@ -53,13 +55,9 @@ def relatorios():
         start, end = end, start
 
     # Atalhos de periodo para os chips da UI (estado refletido na URL).
-    y3, m3 = today.year, today.month - 2
-    while m3 < 1:
-        m3 += 12
-        y3 -= 1
     quick = {
         "mes": {"start": today.replace(day=1).isoformat(), "end": today.isoformat()},
-        "tri": {"start": date(y3, m3, 1).isoformat(), "end": today.isoformat()},
+        "tri": {"start": _month_start_months_ago(today, 2), "end": today.isoformat()},
         "ano": {"start": date(today.year, 1, 1).isoformat(), "end": today.isoformat()},
     }
 
@@ -159,6 +157,8 @@ def perfil():
 def _render_perfil(db, main_goal, new_token=None):
     """Monta o contexto do perfil (reaproveitado no GET e na geracao de token)."""
     user = g.user
+    if new_token is None:
+        new_token = session.pop("new_api_token", None)
     form = {
         "name": user["name"] if user else "",
         "monthly_income": user["monthly_income"] if user else 0,
@@ -190,4 +190,5 @@ def perfil_token():
         "UPDATE users SET api_token_hash = ? WHERE id = ?", (hash_token(token), uid())
     )
     db.commit()
-    return _render_perfil(db, get_main_goal(db, uid()), new_token=token)
+    session["new_api_token"] = token
+    return redirect(url_for("main.perfil"))

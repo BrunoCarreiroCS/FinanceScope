@@ -95,6 +95,21 @@ def test_build_report_inclui_meses_no_intervalo(db):
     assert r["avg_monthly_expense"] == pytest.approx(900)
 
 
+def test_build_report_media_mensal_usa_periodo_completo_acima_de_24_meses(db):
+    user = db.execute("SELECT * FROM users WHERE id=1").fetchone()
+    db.execute(
+        """INSERT INTO transactions (user_id, type, description, amount, date)
+           VALUES (1, 'expense', 'Periodo longo', 2600, '2024-01-15')"""
+    )
+    db.commit()
+
+    r = reports.build_report(db, user, "2024-01-01", "2026-02-28")
+
+    assert r["n_months"] == 26
+    assert len(r["evolution"]["labels"]) == 24
+    assert r["avg_monthly_expense"] == pytest.approx(100)
+
+
 def test_expense_to_date_ignora_lancamentos_futuros(db):
     # Em 07/06: so o Aluguel (06/06) entra; Mercado (08/06) fica de fora.
     total = reports.expense_to_date(db, 1, date(2026, 6, 7))

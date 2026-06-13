@@ -72,6 +72,8 @@ CREATE TABLE purchase_simulations (
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
+CREATE INDEX idx_users_api_token_hash ON users(api_token_hash);
+
 -- Seed: categorias padrao (globais, compartilhadas por todos os usuarios).
 -- Usuarios sao criados via cadastro (/registro).
 INSERT INTO categories (name, type, color, is_default) VALUES

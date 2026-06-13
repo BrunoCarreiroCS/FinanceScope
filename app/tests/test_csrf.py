@@ -28,3 +28,13 @@ def test_post_sem_csrf_token_e_bloqueado():
         assert r.status_code == 400
     finally:
         os.unlink(path)
+
+
+def test_post_api_sem_csrf_nao_e_bloqueado_pelo_guard():
+    application, path = _app_with_csrf()
+    try:
+        client = application.test_client()
+        r = client.post("/api/rota-futura", data={})
+        assert r.status_code != 400
+    finally:
+        os.unlink(path)

@@ -14,12 +14,12 @@ Todas as ferramentas sao somente-leitura.
 """
 import json
 import os
+from json import JSONDecodeError
 from typing import Annotated, Optional
 
 import httpx
-from pydantic import Field
-
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 API_URL = os.environ.get("FINANCESCOPE_API_URL", "http://127.0.0.1:5000").rstrip("/")
 API_TOKEN = os.environ.get("FINANCESCOPE_API_TOKEN", "")
@@ -46,6 +46,11 @@ async def _get(path: str, params: Optional[dict] = None) -> str:
             }, ensure_ascii=False)
         r.raise_for_status()
         return json.dumps(r.json(), ensure_ascii=False, indent=2)
+    except httpx.TimeoutException:
+        return json.dumps({
+            "error": "timeout",
+            "message": f"A API em {API_URL} demorou demais para responder.",
+        }, ensure_ascii=False)
     except httpx.ConnectError:
         return json.dumps({
             "error": "offline",
@@ -55,6 +60,16 @@ async def _get(path: str, params: Optional[dict] = None) -> str:
         return json.dumps({
             "error": "http_error",
             "message": f"A API respondeu {e.response.status_code}.",
+        }, ensure_ascii=False)
+    except httpx.RequestError as e:
+        return json.dumps({
+            "error": "request_error",
+            "message": f"Falha ao consultar {API_URL}: {e.__class__.__name__}.",
+        }, ensure_ascii=False)
+    except (JSONDecodeError, ValueError):
+        return json.dumps({
+            "error": "invalid_json",
+            "message": "A API respondeu, mas nao retornou um JSON valido.",
         }, ensure_ascii=False)
 
 
