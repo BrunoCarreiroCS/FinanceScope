@@ -3,7 +3,7 @@
 [![CI](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Flask](https://img.shields.io/badge/flask-3.x-black)
-![Tests](https://img.shields.io/badge/tests-70%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-73%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 > **Entenda seu dinheiro. Decida melhor. Viva leve.**
@@ -112,7 +112,7 @@ Análise por período com gráficos e exportação para PDF.
 - **Regras de negócio** — RealCost Engine centralizado e testável
 - **Arquitetura** — Flask Blueprints por domínio (auth, transações, metas, relatórios, API)
 - **API & integração** — REST read-only autenticada por token + 2 servidores MCP
-- **Testes** — pytest com 70 testes (auth, RealCost, relatórios, CSV, API)
+- **Testes** — pytest com 73 testes (auth, RealCost, relatórios, CSV, API, banco, CSRF)
 - **CI/CD** — GitHub Actions (Python 3.11 e 3.12) + ruff (lint)
 - **Deploy** — PythonAnywhere com HTTPS e banco persistente
 - **Frontend** — CSS puro (~1.100 linhas, sem framework), design system
@@ -155,7 +155,7 @@ Análise por período com gráficos e exportação para PDF.
 - Chart.js (CDN)
 
 **Qualidade**
-- pytest (70 testes)
+- pytest (73 testes)
 - ruff (linter)
 - GitHub Actions (CI)
 
@@ -274,7 +274,7 @@ app/
 │   └── forms.py            # parsing/validação de inputs
 ├── templates/              # Jinja2 (landing, auth, app)
 ├── static/                 # CSS, JS, logo SVG, favicon
-└── tests/                  # pytest (70 testes)
+└── tests/                  # pytest (73 testes)
 
 mcp_server/                 # servidores MCP (RealCost stateless + consultor)
 ```
@@ -340,8 +340,30 @@ Projeto desenvolvido por **fases**, com commits organizados:
 | 6 | Metas e Simulador com veredito |
 | 7 | Login multiusuário, polimento, deploy |
 | ➕ | CSRF, relatórios + PDF, importação CSV |
+| 🔍 | Revisão de código (8 bugs corrigidos, 3 testes novos) |
 
 O plano técnico original está em [`docs/`](docs/) (PDF e DOCX).
+
+---
+
+## 🔍 Revisão de código e correções
+
+Revisão estática multi-ângulo realizada após a entrega da API + MCP. **8 bugs
+encontrados e corrigidos:**
+
+| # | Arquivo | Bug | Impacto |
+|---|---------|-----|---------|
+| 1 | `mcp_server/consultor_server.py` | `httpx.TimeoutException` não capturado | Traceback bruto ao cliente MCP em vez de JSON de erro |
+| 2 | `app/utils/reports.py` | `avg_monthly_expense` usava `n_months` limitado a 24 | Média mensal inflada em ~54% para períodos > 24 meses |
+| 3 | `app/app.py` | `csrf_protect` sem isenção `/api/*` | Qualquer POST futuro na API recebia `abort(400)` |
+| 4 | `app/blueprints/main.py` | `/perfil/token` sem redirect-after-post | F5 após gerar token criava novo token e invalidava o copiado |
+| 5 | `app/database.py` + `app/schema.sql` | Sem índice em `api_token_hash` | Full scan em `users` a cada autenticação por token |
+| 6 | `app/database.py` | `PRAGMA table_info` executado em toda requisição | Query de migração desnecessária pós-deploy |
+| 7 | `app/blueprints/main.py` | Cálculo de "2 meses atrás" duplicado no mesmo handler | Bug de manutenção: mudança num lugar não refletia no outro |
+| 8 | `app/utils/reports.py` | `COUNT(*)` redundante em `build_report` | Round-trip extra ao SQLite em todo carregamento de relatório |
+
+**3 novos testes** adicionados (`test_database.py`, `test_csrf.py`,
+`test_reports.py`) cobrindo os cenários dos bugs corrigidos.
 
 ---
 
