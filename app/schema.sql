@@ -15,6 +15,7 @@ CREATE TABLE users (
     monthly_income REAL NOT NULL DEFAULT 0,
     monthly_hours REAL NOT NULL DEFAULT 0,
     monthly_limit REAL NOT NULL DEFAULT 0,
+    api_token_hash TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

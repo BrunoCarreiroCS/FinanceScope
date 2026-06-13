@@ -1,7 +1,13 @@
 """Funcoes compartilhadas entre os blueprints (acesso a dados e formatacao)."""
+import hashlib
 from datetime import date
 
 from flask import g
+
+
+def hash_token(token: str) -> str:
+    """SHA-256 hex de um token de API. So o hash e guardado no banco."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def uid():

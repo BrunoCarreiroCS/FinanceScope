@@ -1,7 +1,17 @@
-# financescope_mcp — RealCost via MCP
+# FinanceScope — servidores MCP
 
-Servidor [MCP](https://modelcontextprotocol.io) que expõe o **RealCost Engine** do
-FinanceScope como ferramentas para um assistente (ex.: Claude Desktop).
+Dois servidores [MCP](https://modelcontextprotocol.io) para o FinanceScope:
+
+| Servidor | Arquivo | Precisa de dados? |
+|---|---|---|
+| **RealCost (engine)** | `server.py` | Não — stateless, você informa os números |
+| **Consultor (dados reais)** | `consultor_server.py` | Sim — lê suas finanças via API com token |
+
+---
+
+## 1) `financescope_mcp` — RealCost via MCP (stateless)
+
+Expõe o **RealCost Engine** como ferramentas para um assistente (ex.: Claude Desktop).
 
 É **stateless**: não acessa banco nem dados de usuário. Quem fornece os números
 (renda, horas, aporte) é a própria conversa. Reusa `app/utils/finance.py` — a mesma
@@ -62,3 +72,51 @@ print(asyncio.run(server.mcp.call_tool('custo_em_horas', {'valor':350,'renda_men
 
 `evaluation.xml` traz perguntas determinísticas (com respostas verificáveis) que
 exercitam as ferramentas — útil para checar que um cliente LLM as usa corretamente.
+
+---
+
+## 2) `financescope_consultor_mcp` — consultor sobre dados reais
+
+Diferente do anterior, este consulta as **suas finanças reais** via a API read-only
+do FinanceScope (`/api/*`), autenticada por **token pessoal**.
+
+### Ferramentas
+
+| Tool | O que faz |
+|---|---|
+| `resumo_financeiro` | Receitas, despesas e saldo de um mês |
+| `gastos_por_categoria` | Despesas por categoria (com %) |
+| `status_meta` | Progresso e prazo da meta principal |
+| `posso_comprar` | RealCost **já com o seu perfil** (não precisa informar renda/horas) |
+
+Todas **read-only**.
+
+### Configuração
+
+1. No app, vá em **Perfil → Token de API → Gerar token** e copie o token.
+2. Garanta que o FinanceScope esteja no ar (local ou deploy).
+3. No `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "financescope_consultor": {
+      "command": "python",
+      "args": ["C:/Users/KABUM/Desktop/FinanScope/mcp_server/consultor_server.py"],
+      "env": {
+        "FINANCESCOPE_API_URL": "http://127.0.0.1:5000",
+        "FINANCESCOPE_API_TOKEN": "cole-seu-token-aqui"
+      }
+    }
+  }
+}
+```
+
+Depois pergunte naturalmente:
+
+> "Quanto gastei com lazer esse mês? E quando atinjo minha reserva?"
+
+O Claude chama `gastos_por_categoria` e `status_meta` e responde com **os seus dados**.
+
+> 🔒 O token dá acesso **somente-leitura** às suas finanças. Trate como uma senha;
+> revogue na página de Perfil quando quiser.

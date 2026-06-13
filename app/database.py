@@ -20,7 +20,20 @@ def get_db():
         g.db = sqlite3.connect(get_db_path())
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON")
+        _ensure_schema(g.db)
     return g.db
+
+
+def _ensure_schema(db):
+    """Migracao leve e idempotente: garante colunas adicionadas apos o MVP.
+
+    Bancos antigos (criados antes do token de API) ganham a coluna sem
+    precisar de ALTER manual no deploy. Custa um PRAGMA por conexao.
+    """
+    cols = {row["name"] for row in db.execute("PRAGMA table_info(users)").fetchall()}
+    if "api_token_hash" not in cols:
+        db.execute("ALTER TABLE users ADD COLUMN api_token_hash TEXT")
+        db.commit()
 
 
 def close_db(_=None):

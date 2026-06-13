@@ -439,6 +439,15 @@ body.auth {
 .legend-meter { height: 5px; border-radius: var(--radius-pill); background: var(--bg-2); overflow: hidden; }
 .legend-meter > span { display: block; height: 100%; border-radius: var(--radius-pill); min-width: 2px; }
 
+/* Token de API (pagina de perfil). */
+.token-box {
+  display: block; margin: 4px 0 12px; padding: 10px 12px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-mono, monospace); font-size: 12px; color: var(--accent);
+  word-break: break-all; user-select: all;
+}
+.token-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
 /* Chips de atalho de periodo nos relatorios. */
 .period-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .chip {

@@ -11,6 +11,7 @@ from flask import Flask, abort, g, redirect, request, session, url_for
 
 import database
 import seeds
+from blueprints.api import bp as api_bp
 from blueprints.auth import bp as auth_bp
 from blueprints.goals import bp as goals_bp
 from blueprints.main import bp as main_bp
@@ -99,6 +100,9 @@ def create_app(test_config=None):
 
     @app.before_request
     def require_login():
+        # A API (/api/*) se autentica por token, fora do fluxo de sessao.
+        if request.path.startswith("/api/"):
+            return
         # Tudo e protegido por padrao; paginas publicas em PUBLIC_ENDPOINTS.
         if request.endpoint in PUBLIC_ENDPOINTS or request.endpoint is None:
             return
@@ -110,6 +114,7 @@ def create_app(test_config=None):
     app.register_blueprint(transactions_bp)
     app.register_blueprint(goals_bp)
     app.register_blueprint(simulator_bp)
+    app.register_blueprint(api_bp)
 
     return app
 

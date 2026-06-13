@@ -96,6 +96,41 @@
       </p>
       {% endif %}
     </div>
+
+    <div class="card">
+      <h3 class="card-title">Token de API
+        {{ info("Permite que um assistente (ex.: Claude via MCP) consulte suas finanças em modo somente-leitura. Trate como uma senha.") }}
+      </h3>
+
+      {% if new_token %}
+      <p class="muted small">Copie agora — ele <strong>não será mostrado novamente</strong>:</p>
+      <code class="token-box">{{ new_token }}</code>
+      {% endif %}
+
+      <p class="muted small">
+        {% if g.user and g.user.api_token_hash %}
+          Há um token ativo. Gerar um novo <strong>invalida o anterior</strong>.
+        {% else %}
+          Você ainda não tem um token. Gere um para usar a integração MCP.
+        {% endif %}
+      </p>
+
+      <div class="token-actions">
+        <form method="post" action="{{ url_for('main.perfil_token') }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <button type="submit" class="btn btn-sm btn-primary">
+            {{ 'Gerar novo token' if (g.user and g.user.api_token_hash) else 'Gerar token' }}
+          </button>
+        </form>
+        {% if g.user and g.user.api_token_hash %}
+        <form method="post" action="{{ url_for('main.perfil_token') }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="action" value="revogar" />
+          <button type="submit" class="btn btn-sm btn-ghost">Revogar</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

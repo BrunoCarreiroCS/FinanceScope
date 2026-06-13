@@ -1,4 +1,5 @@
 """Paginas principais: landing, dashboard, relatorios e perfil."""
+import secrets
 from datetime import date
 
 from flask import (
@@ -12,7 +13,7 @@ from flask import (
 )
 
 import database
-from helpers import get_main_goal, uid
+from helpers import get_main_goal, hash_token, uid
 from utils import reports
 from utils.forms import parse_date, parse_decimal
 
@@ -152,6 +153,11 @@ def perfil():
         return redirect(url_for("main.perfil"))
 
     # GET: pre-preenche com dados do banco.
+    return _render_perfil(db, main_goal)
+
+
+def _render_perfil(db, main_goal, new_token=None):
+    """Monta o contexto do perfil (reaproveitado no GET e na geracao de token)."""
     user = g.user
     form = {
         "name": user["name"] if user else "",
@@ -163,5 +169,25 @@ def perfil():
         "goal_contribution": main_goal["monthly_contribution"] if main_goal else "",
     }
     return render_template(
-        "perfil.html", active="perfil", form=form, errors={}, main_goal=main_goal,
+        "perfil.html", active="perfil", form=form, errors={},
+        main_goal=main_goal, new_token=new_token,
     )
+
+
+@bp.route("/perfil/token", methods=["POST"])
+def perfil_token():
+    """Gera ou revoga o token de API (consumido pelo MCP consultor)."""
+    db = database.get_db()
+    if request.form.get("action") == "revogar":
+        db.execute("UPDATE users SET api_token_hash = NULL WHERE id = ?", (uid(),))
+        db.commit()
+        flash("Token de API revogado.", "success")
+        return redirect(url_for("main.perfil"))
+
+    # Gera um token novo; guardamos só o hash. O texto puro aparece uma vez.
+    token = secrets.token_urlsafe(32)
+    db.execute(
+        "UPDATE users SET api_token_hash = ? WHERE id = ?", (hash_token(token), uid())
+    )
+    db.commit()
+    return _render_perfil(db, get_main_goal(db, uid()), new_token=token)
