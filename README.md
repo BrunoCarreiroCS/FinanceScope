@@ -3,7 +3,7 @@
 [![CI](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml/badge.svg)](https://github.com/BrunoCarreiroCS/FinanceScope/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Flask](https://img.shields.io/badge/flask-3.x-black)
-![Tests](https://img.shields.io/badge/tests-61%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-70%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 > **Entenda seu dinheiro. Decida melhor. Viva leve.**
@@ -110,7 +110,9 @@ Análise por período com gráficos e exportação para PDF.
 - **Segurança** — hash de senha (Werkzeug), proteção CSRF, cookies hardened
 - **Banco de dados** — SQLite com constraints e foreign keys (5 tabelas)
 - **Regras de negócio** — RealCost Engine centralizado e testável
-- **Testes** — pytest com 61 testes (auth, RealCost, relatórios, CSV)
+- **Arquitetura** — Flask Blueprints por domínio (auth, transações, metas, relatórios, API)
+- **API & integração** — REST read-only autenticada por token + 2 servidores MCP
+- **Testes** — pytest com 70 testes (auth, RealCost, relatórios, CSV, API)
 - **CI/CD** — GitHub Actions (Python 3.11 e 3.12) + ruff (lint)
 - **Deploy** — PythonAnywhere com HTTPS e banco persistente
 - **Frontend** — CSS puro (~1.100 linhas, sem framework), design system
@@ -153,7 +155,7 @@ Análise por período com gráficos e exportação para PDF.
 - Chart.js (CDN)
 
 **Qualidade**
-- pytest (61 testes)
+- pytest (70 testes)
 - ruff (linter)
 - GitHub Actions (CI)
 
@@ -253,10 +255,18 @@ Guia passo a passo no PythonAnywhere (grátis, HTTPS, banco persistente):
 
 ```
 app/
-├── app.py                  # rotas, autenticação, regras de negócio
-├── database.py             # conexão SQLite + flask init-db
+├── app.py                  # application factory: config, hooks, registro de blueprints
+├── helpers.py              # utilidades compartilhadas (uid, formatação, hash de token)
+├── database.py             # conexão SQLite + migração leve (flask init-db)
 ├── schema.sql              # 5 tabelas
 ├── seeds.py                # flask seed-demo
+├── blueprints/
+│   ├── auth.py             # registro, login, logout
+│   ├── main.py             # landing, dashboard, relatórios, perfil
+│   ├── transactions.py     # CRUD de transações + importação CSV
+│   ├── goals.py            # CRUD de metas
+│   ├── simulator.py        # simulador "Posso comprar?"
+│   └── api.py              # API REST read-only (token) consumida pelo MCP
 ├── utils/
 │   ├── finance.py          # RealCost Engine
 │   ├── reports.py          # agregações de dashboard e relatórios
@@ -264,18 +274,23 @@ app/
 │   └── forms.py            # parsing/validação de inputs
 ├── templates/              # Jinja2 (landing, auth, app)
 ├── static/                 # CSS, JS, logo SVG, favicon
-└── tests/                  # pytest (61 testes)
+└── tests/                  # pytest (70 testes)
+
+mcp_server/                 # servidores MCP (RealCost stateless + consultor)
 ```
 
 **Padrões aplicados:**
 
 - Factory pattern (`create_app`)
+- Blueprints por domínio (rotas organizadas e desacopladas)
 - Context managers (Flask `g`)
 - Validação em camadas (HTML5 + Python + constraints SQL)
 - POST/Redirect/GET
 - Mensagens flash
 - Sanitização contra SQL-injection (parâmetros)
+- Autenticação por sessão (web) **e** por token hasheado (API)
 - Hash de senha e proteção CSRF
+- Migração de schema leve e idempotente
 - Separação clara entre dados, regras e apresentação
 
 ---
